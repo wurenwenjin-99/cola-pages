@@ -1,0 +1,1211 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="theme-color" content="#1A1A1A">
+  <title>📱 我的工作台</title>
+  <style>
+    :root {
+      --bg: #1A1A1A;
+      --card-bg: #252525;
+      --primary: #0FF3FF;
+      --primary-dim: rgba(15, 243, 255, 0.12);
+      --accent: #FFD70F;
+      --accent-dim: rgba(255, 215, 15, 0.15);
+      --success: #27AE60;
+      --danger: #E74C3C;
+      --info: #3498DB;
+      --neutral-mid: #6B6B6B;
+      --neutral-light: #BDBDBD;
+      --border: #333333;
+      --radius: 16px;
+      --shadow: 0 8px 24px rgba(0,0,0,0.4);
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'PingFang SC', 'Microsoft YaHei', sans-serif;
+      background: var(--bg);
+      color: #fff;
+      min-height: 100vh;
+      padding-bottom: 80px;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    .header {
+      background: linear-gradient(135deg, #0a0a0a 0%, #1A1A1A 100%);
+      color: var(--primary);
+      padding: 32px 20px 40px;
+      border-bottom: 1px solid var(--border);
+      position: relative;
+    }
+
+    .header::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 20px;
+      right: 20px;
+      height: 2px;
+      background: linear-gradient(90deg, var(--primary), var(--accent));
+      border-radius: 2px;
+    }
+
+    .header h1 {
+      font-size: 26px;
+      font-weight: 800;
+      letter-spacing: -0.5px;
+      background: linear-gradient(135deg, var(--primary), var(--accent));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .header .date {
+      color: var(--neutral-light);
+      font-size: 14px;
+      margin-top: 6px;
+      font-weight: 500;
+    }
+
+    .container {
+      padding: 24px 16px 80px;
+      max-width: 480px;
+      margin: 0 auto;
+    }
+
+    .section {
+      background: var(--card-bg);
+      border-radius: var(--radius);
+      padding: 20px;
+      margin-bottom: 24px;
+      box-shadow: var(--shadow);
+      border: 1px solid var(--border);
+    }
+
+    .section-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 18px;
+    }
+
+    .section-title {
+      font-size: 18px;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      color: var(--primary);
+    }
+
+    .section-icon {
+      width: 38px;
+      height: 38px;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 20px;
+      background: var(--primary-dim);
+      border: 1px solid rgba(15, 243, 255, 0.2);
+    }
+
+    .icon-health { background: rgba(39, 174, 96, 0.12); border-color: rgba(39, 174, 96, 0.25); }
+    .icon-sport { background: var(--accent-dim); border-color: rgba(255, 215, 15, 0.25); }
+
+    .badge {
+      font-size: 11px;
+      padding: 5px 12px;
+      border-radius: 20px;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+    }
+
+    .badge-weekly {
+      background: var(--primary-dim);
+      color: var(--primary);
+      border: 1px solid rgba(15, 243, 255, 0.25);
+    }
+
+    .badge-daily {
+      background: rgba(39, 174, 96, 0.12);
+      color: var(--success);
+      border: 1px solid rgba(39, 174, 96, 0.25);
+    }
+
+    /* ===== 日历任务 ===== */
+    .calendar-grid {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      gap: 6px;
+      margin-bottom: 16px;
+    }
+
+    .calendar-day {
+      text-align: center;
+      padding: 8px 4px;
+      border-radius: 12px;
+      background: rgba(255,255,255,0.03);
+      min-height: 86px;
+      position: relative;
+      transition: all 0.2s;
+      border: 1px solid transparent;
+      cursor: pointer;
+    }
+
+    .calendar-day:hover {
+      background: rgba(255,255,255,0.06);
+      border-color: var(--border);
+    }
+
+    .calendar-day.today {
+      background: var(--primary-dim);
+      border: 1px solid var(--primary);
+      box-shadow: 0 0 12px rgba(15, 243, 255, 0.15);
+    }
+
+    .calendar-day.today .calendar-day-num {
+      color: var(--primary);
+    }
+
+    .calendar-day-label {
+      font-size: 10px;
+      color: var(--neutral-mid);
+      font-weight: 700;
+      margin-bottom: 4px;
+      letter-spacing: 1px;
+    }
+
+    .calendar-day-num {
+      font-size: 16px;
+      font-weight: 700;
+      margin-bottom: 6px;
+      color: #fff;
+    }
+
+    .calendar-tasks {
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+    }
+
+    .cal-task {
+      font-size: 9px;
+      padding: 3px 4px;
+      border-radius: 4px;
+      cursor: pointer;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      transition: all 0.2s;
+      text-align: left;
+      font-weight: 600;
+    }
+
+    .cal-task.manual {
+      background: rgba(15, 243, 255, 0.15);
+      color: var(--primary);
+      border-left: 2px solid var(--primary);
+    }
+
+    .cal-task.ip {
+      background: var(--accent-dim);
+      color: var(--accent);
+      border-left: 2px solid var(--accent);
+    }
+
+    .cal-task.completed {
+      opacity: 0.35;
+      text-decoration: line-through;
+    }
+
+    .add-task-form {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      padding: 14px;
+      background: rgba(255,255,255,0.03);
+      border-radius: 14px;
+      border: 1px solid var(--border);
+    }
+
+    .form-row {
+      display: flex;
+      gap: 8px;
+    }
+
+    .form-row select, .form-row input {
+      padding: 10px 12px;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      font-size: 14px;
+      outline: none;
+      background: var(--bg);
+      color: #fff;
+      -webkit-appearance: none;
+      appearance: none;
+    }
+
+    .form-row select { min-width: 80px; }
+    .form-row select option { background: var(--bg); color: #fff; }
+    .form-row input { flex: 1; }
+    .form-row input::placeholder { color: var(--neutral-mid); }
+    .form-row select:focus, .form-row input:focus {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(15, 243, 255, 0.1);
+    }
+
+    .btn {
+      padding: 10px 18px;
+      border: none;
+      border-radius: 10px;
+      font-size: 14px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.2s;
+      letter-spacing: 0.3px;
+      -webkit-appearance: none;
+      appearance: none;
+    }
+
+    .btn-primary {
+      background: var(--accent);
+      color: var(--bg);
+    }
+    .btn-primary:hover {
+      background: #ffe135;
+      transform: translateY(-1px);
+      box-shadow: 0 4px 12px rgba(255, 215, 15, 0.3);
+    }
+    .btn-small { padding: 8px 14px; font-size: 12px; }
+    .btn-danger {
+      background: rgba(231, 76, 60, 0.15);
+      color: var(--danger);
+      border: 1px solid rgba(231, 76, 60, 0.3);
+    }
+    .btn-danger:hover { background: rgba(231, 76, 60, 0.25); }
+    .btn-secondary {
+      background: var(--primary-dim);
+      color: var(--primary);
+      border: 1px solid rgba(15, 243, 255, 0.25);
+    }
+    .btn-secondary:hover { background: rgba(15, 243, 255, 0.2); }
+
+    /* ===== 健康部分 ===== */
+    .health-grid {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .health-card {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 14px 16px;
+      background: rgba(255,255,255,0.03);
+      border-radius: 14px;
+      border: 1px solid var(--border);
+      transition: all 0.2s;
+    }
+    .health-card:hover {
+      border-color: rgba(255,255,255,0.1);
+      background: rgba(255,255,255,0.05);
+    }
+    .health-card.completed {
+      background: rgba(39, 174, 96, 0.08);
+      border-color: rgba(39, 174, 96, 0.3);
+    }
+
+    .health-left {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .health-emoji {
+      font-size: 26px;
+      width: 44px;
+      height: 44px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: rgba(255,255,255,0.05);
+      border-radius: 12px;
+      border: 1px solid var(--border);
+    }
+
+    .health-info {
+      display: flex;
+      flex-direction: column;
+    }
+    .health-name { font-size: 15px; font-weight: 600; color: #fff; }
+    .health-time { font-size: 11px; color: var(--neutral-mid); margin-top: 3px; }
+    .health-count { font-size: 11px; color: var(--success); margin-top: 2px; font-weight: 600; }
+
+    .health-right {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .water-control {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      background: var(--bg);
+      padding: 4px;
+      border-radius: 10px;
+      border: 1px solid var(--border);
+    }
+    .water-btn {
+      width: 32px;
+      height: 32px;
+      border: none;
+      border-radius: 8px;
+      background: var(--primary-dim);
+      color: var(--primary);
+      font-size: 18px;
+      font-weight: 700;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.2s;
+      -webkit-appearance: none;
+      appearance: none;
+    }
+    .water-btn:hover {
+      background: var(--primary);
+      color: var(--bg);
+    }
+    .water-value {
+      font-size: 16px;
+      font-weight: 700;
+      min-width: 50px;
+      text-align: center;
+      color: var(--info);
+    }
+
+    .health-toggle {
+      width: 50px;
+      height: 28px;
+      border-radius: 14px;
+      background: var(--neutral-mid);
+      position: relative;
+      cursor: pointer;
+      transition: background 0.3s;
+      flex-shrink: 0;
+    }
+    .health-toggle.on { background: var(--success); }
+    .health-toggle::after {
+      content: '';
+      position: absolute;
+      width: 22px;
+      height: 22px;
+      background: white;
+      border-radius: 50%;
+      top: 3px;
+      left: 3px;
+      transition: transform 0.3s;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.3);
+    }
+    .health-toggle.on::after { transform: translateX(22px); }
+
+    .health-btn {
+      padding: 8px 16px;
+      border: none;
+      border-radius: 10px;
+      font-size: 13px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.2s;
+      background: rgba(39, 174, 96, 0.12);
+      color: var(--success);
+      border: 1px solid rgba(39, 174, 96, 0.25);
+      -webkit-appearance: none;
+      appearance: none;
+    }
+    .health-btn:hover {
+      background: rgba(39, 174, 96, 0.25);
+    }
+
+    .health-history {
+      margin-top: 14px;
+      padding-top: 14px;
+      border-top: 1px solid var(--border);
+    }
+    .history-title {
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--neutral-mid);
+      margin-bottom: 10px;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+    }
+    .history-list {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+    .history-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 8px 12px;
+      border-radius: 10px;
+      background: rgba(255,255,255,0.03);
+      border: 1px solid var(--border);
+      font-size: 13px;
+    }
+    .history-item-left {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .history-item-emoji { font-size: 16px; }
+    .history-item-text { color: #fff; }
+    .history-item-time { color: var(--neutral-mid); font-size: 11px; margin-left: 4px; }
+    .history-delete {
+      background: none;
+      border: none;
+      color: var(--danger);
+      cursor: pointer;
+      font-size: 16px;
+      opacity: 0.5;
+      transition: opacity 0.2s;
+      padding: 2px 6px;
+      -webkit-appearance: none;
+      appearance: none;
+    }
+    .history-delete:hover { opacity: 1; }
+
+    /* ===== 攀岩部分 ===== */
+    .climb-input {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 16px;
+    }
+    .climb-input input {
+      flex: 1;
+      padding: 12px 16px;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      font-size: 15px;
+      outline: none;
+      transition: all 0.2s;
+      background: var(--bg);
+      color: #fff;
+      -webkit-appearance: none;
+      appearance: none;
+    }
+    .climb-input input::placeholder { color: var(--neutral-mid); }
+    .climb-input input:focus {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(15, 243, 255, 0.1);
+    }
+
+    .climb-list {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .climb-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 12px 16px;
+      background: rgba(255,255,255,0.03);
+      border-radius: 10px;
+      border: 1px solid transparent;
+      transition: all 0.2s;
+    }
+    .climb-item:hover {
+      border-color: var(--border);
+      background: rgba(255,255,255,0.05);
+    }
+    .climb-info {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .climb-level {
+      padding: 5px 12px;
+      border-radius: 8px;
+      font-size: 12px;
+      font-weight: 800;
+      letter-spacing: 0.5px;
+    }
+    .level-v1 { background: rgba(52, 152, 219, 0.15); color: #5DADE2; border: 1px solid rgba(52, 152, 219, 0.3); }
+    .level-v2 { background: rgba(191, 176, 99, 0.15); color: #BFB063; border: 1px solid rgba(191, 176, 99, 0.3); }
+    .level-v3 { background: var(--accent-dim); color: var(--accent); border: 1px solid rgba(255, 215, 15, 0.3); }
+    .level-v4 { background: rgba(243, 156, 18, 0.15); color: #F39C12; border: 1px solid rgba(243, 156, 18, 0.3); }
+    .level-v5 { background: rgba(231, 76, 60, 0.15); color: #E74C3C; border: 1px solid rgba(231, 76, 60, 0.3); }
+    .level-other { background: rgba(133, 133, 133, 0.15); color: #858585; border: 1px solid rgba(133, 133, 133, 0.3); }
+    .climb-date { font-size: 12px; color: var(--neutral-mid); }
+    .climb-delete {
+      background: none;
+      border: none;
+      color: var(--danger);
+      cursor: pointer;
+      font-size: 20px;
+      padding: 4px;
+      opacity: 0.5;
+      transition: opacity 0.2s;
+      -webkit-appearance: none;
+      appearance: none;
+    }
+    .climb-delete:hover { opacity: 1; }
+
+    .climb-stats {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 12px;
+      margin-top: 16px;
+      padding-top: 16px;
+      border-top: 1px solid var(--border);
+    }
+    .stat-box {
+      text-align: center;
+      padding: 14px;
+      background: rgba(255,255,255,0.03);
+      border-radius: 12px;
+      border: 1px solid var(--border);
+    }
+    .stat-value {
+      font-size: 28px;
+      font-weight: 800;
+      background: linear-gradient(135deg, var(--primary), var(--accent));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    .stat-label {
+      font-size: 12px;
+      color: var(--neutral-mid);
+      margin-top: 6px;
+      font-weight: 500;
+    }
+    .empty-state {
+      text-align: center;
+      padding: 28px;
+      color: var(--neutral-mid);
+      font-size: 14px;
+    }
+
+    .toast {
+      position: fixed;
+      bottom: 24px;
+      left: 50%;
+      transform: translateX(-50%) translateY(100px);
+      background: var(--card-bg);
+      color: #fff;
+      padding: 14px 28px;
+      border-radius: 14px;
+      font-size: 14px;
+      font-weight: 600;
+      z-index: 1000;
+      transition: transform 0.3s ease;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+      border: 1px solid var(--border);
+      border-left: 3px solid var(--primary);
+    }
+    .toast.show { transform: translateX(-50%) translateY(0); }
+
+    .task-modal-overlay {
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(0,0,0,0.7);
+      backdrop-filter: blur(4px);
+      -webkit-backdrop-filter: blur(4px);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 999;
+      padding: 20px;
+    }
+    .task-modal-overlay.show { display: flex; }
+    .task-modal {
+      background: var(--card-bg);
+      border-radius: 20px;
+      padding: 24px;
+      width: 100%;
+      max-width: 380px;
+      max-height: 80vh;
+      overflow-y: auto;
+      border: 1px solid var(--border);
+      box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+    }
+    .task-modal h3 {
+      margin-bottom: 18px;
+      font-size: 18px;
+      color: var(--primary);
+      font-weight: 700;
+    }
+    .modal-task-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 12px 0;
+      border-bottom: 1px solid var(--border);
+    }
+    .modal-task-info {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+    .modal-task-type {
+      font-size: 10px;
+      padding: 3px 10px;
+      border-radius: 6px;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+      width: fit-content;
+    }
+    .modal-task-type.manual { background: var(--primary-dim); color: var(--primary); }
+    .modal-task-type.ip { background: var(--accent-dim); color: var(--accent); }
+    .modal-task-title { font-size: 14px; font-weight: 500; color: #fff; }
+    .modal-close { margin-top: 18px; width: 100%; }
+
+    .checkbox {
+      width: 22px;
+      height: 22px;
+      border: 2px solid var(--neutral-mid);
+      border-radius: 6px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 13px;
+      transition: all 0.2s;
+      flex-shrink: 0;
+    }
+    .checkbox.checked {
+      background: var(--success);
+      border-color: var(--success);
+      color: white;
+    }
+  </style>
+</head>
+<body>
+
+<div class="header">
+  <div class="container">
+    <h1>📱 我的工作台</h1>
+    <div class="date" id="currentDate"></div>
+  </div>
+</div>
+
+<div class="container">
+  <!-- 每周任务日历 -->
+  <div class="section">
+    <div class="section-header">
+      <div class="section-title">
+        <div class="section-icon icon-task">📋</div>
+        每周任务
+      </div>
+      <span class="badge badge-weekly">本周</span>
+    </div>
+    <div class="calendar-grid" id="calendarGrid"></div>
+
+    <div class="add-task-form">
+      <div class="form-row">
+        <select id="taskDay">
+          <option value="1">周一</option>
+          <option value="2">周二</option>
+          <option value="3">周三</option>
+          <option value="4">周四</option>
+          <option value="5">周五</option>
+          <option value="6">周六</option>
+          <option value="0">周日</option>
+        </select>
+        <select id="taskType">
+          <option value="manual">手工更新</option>
+          <option value="ip">IP更新</option>
+        </select>
+      </div>
+      <div class="form-row">
+        <input type="text" id="taskTitle" placeholder="填写更新内容标题...">
+        <button class="btn btn-primary btn-small" onclick="addCalendarTask()">添加</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 每日健康 -->
+  <div class="section">
+    <div class="section-header">
+      <div class="section-title">
+        <div class="section-icon icon-health">💚</div>
+        每日健康
+      </div>
+      <span class="badge badge-daily">今日</span>
+    </div>
+    <div class="health-grid" id="healthGrid"></div>
+    <div class="health-history" id="healthHistory"></div>
+  </div>
+
+  <!-- 每周动起来 -->
+  <div class="section">
+    <div class="section-header">
+      <div class="section-title">
+        <div class="section-icon icon-sport">🧗</div>
+        每周动起来
+      </div>
+      <span class="badge badge-weekly">攀岩</span>
+    </div>
+    <div class="climb-input">
+      <input type="text" id="climbInput" placeholder="输入线路难度 (如: V2, 5.10a)" maxlength="10">
+      <button class="btn btn-primary" onclick="addClimb()">记录</button>
+    </div>
+    <div class="climb-list" id="climbList"></div>
+    <div class="climb-stats" id="climbStats"></div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<div class="task-modal-overlay" id="taskModal" onclick="closeModal(event)">
+  <div class="task-modal" onclick="event.stopPropagation()">
+    <h3 id="modalTitle">任务详情</h3>
+    <div id="modalContent"></div>
+    <button class="btn btn-secondary modal-close" onclick="closeModal()">关闭</button>
+  </div>
+</div>
+
+<script>
+  const STORAGE_KEY = 'my_workbench_brand_v3';
+  const DAY_NAMES = ['周日','周一','周二','周三','周四','周五','周六'];
+  const DAY_SHORT = ['日','一','二','三','四','五','六'];
+
+  function getData() {
+    const today = new Date().toDateString();
+    const defaultData = {
+      weekTasks: {},
+      health: {
+        noMilk: { name: '戒牛奶', emoji: '🥛', completed: false },
+        poop: { name: '拉粑粑', emoji: '💩', count: 0, history: [] },
+        water: { name: '喝水', emoji: '💧', liters: 0, history: [] }
+      },
+      climbs: [],
+      lastUpdate: today
+    };
+    try {
+      const saved = localStorage.getItem(STORAGE_KEY);
+      if (saved) {
+        const data = JSON.parse(saved);
+        // 每天自动刷新健康数据
+        if (data.lastUpdate !== today) {
+          data.health.noMilk.completed = false;
+          data.health.poop.count = 0;
+          data.health.poop.history = [];
+          data.health.water.liters = 0;
+          data.health.water.history = [];
+          data.lastUpdate = today;
+          saveData(data);
+        }
+        return data;
+      }
+    } catch(e) {}
+    saveData(defaultData);
+    return defaultData;
+  }
+
+  function saveData(data) {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+  }
+
+  let data = getData();
+
+  function showToast(msg) {
+    const toast = document.getElementById('toast');
+    toast.textContent = msg;
+    toast.classList.add('show');
+    setTimeout(() => toast.classList.remove('show'), 2200);
+  }
+
+  function updateDate() {
+    const now = new Date();
+    const options = { year: 'numeric', month: 'long', day: 'numeric', weekday: 'long' };
+    document.getElementById('currentDate').textContent = now.toLocaleDateString('zh-CN', options);
+  }
+
+  // ===== 日历任务 =====
+  function getWeekDates() {
+    const now = new Date();
+    const day = now.getDay();
+    const diff = now.getDate() - day + (day === 0 ? -6 : 1);
+    const monday = new Date(now);
+    monday.setDate(diff);
+    monday.setHours(0,0,0,0);
+    const dates = [];
+    for (let i = 0; i < 7; i++) {
+      const d = new Date(monday);
+      d.setDate(monday.getDate() + i);
+      dates.push(d);
+    }
+    return dates;
+  }
+
+  function getWeekKey() {
+    return getWeekDates()[0].toDateString();
+  }
+
+  function getCurrentWeekTasks() {
+    const weekKey = getWeekKey();
+    if (!data.weekTasks) data.weekTasks = {};
+    if (!data.weekTasks[weekKey]) data.weekTasks[weekKey] = [];
+    return data.weekTasks[weekKey];
+  }
+
+  function renderCalendar() {
+    const dates = getWeekDates();
+    const today = new Date();
+    const grid = document.getElementById('calendarGrid');
+    const tasks = getCurrentWeekTasks();
+
+    grid.innerHTML = dates.map((date, idx) => {
+      const isToday = date.toDateString() === today.toDateString();
+      const dayTasks = tasks.filter(t => t.dayIndex === idx);
+      return `
+        <div class="calendar-day ${isToday ? 'today' : ''}" onclick="showDayTasks(${idx})">
+          <div class="calendar-day-label">${DAY_SHORT[idx === 6 ? 0 : idx + 1]}</div>
+          <div class="calendar-day-num">${date.getDate()}</div>
+          <div class="calendar-tasks">
+            ${dayTasks.slice(0, 2).map(t => `
+              <div class="cal-task ${t.type} ${t.completed ? 'completed' : ''}">${t.title}</div>
+            `).join('')}
+            ${dayTasks.length > 2 ? `<div class="cal-task" style="font-size:9px;color:#6B6B6B;">+${dayTasks.length - 2}</div>` : ''}
+          </div>
+        </div>
+      `;
+    }).join('');
+  }
+
+  function addCalendarTask() {
+    const daySelect = document.getElementById('taskDay');
+    const typeSelect = document.getElementById('taskType');
+    const titleInput = document.getElementById('taskTitle');
+    const dayIndex = parseInt(daySelect.value);
+    const type = typeSelect.value;
+    const title = titleInput.value.trim();
+    if (!title) { showToast('⚠️ 请填写标题'); return; }
+
+    const tasks = getCurrentWeekTasks();
+    tasks.push({ id: Date.now(), dayIndex: dayIndex === 0 ? 6 : dayIndex - 1, type, title, completed: false });
+    saveData(data);
+    titleInput.value = '';
+    renderCalendar();
+    showToast('✅ 任务已添加');
+  }
+
+  function showDayTasks(dayIndex) {
+    const tasks = getCurrentWeekTasks().filter(t => t.dayIndex === dayIndex);
+    const modal = document.getElementById('taskModal');
+    const title = document.getElementById('modalTitle');
+    const content = document.getElementById('modalContent');
+    const dates = getWeekDates();
+    const dateStr = dates[dayIndex].toLocaleDateString('zh-CN', { month: 'short', day: 'numeric' });
+    title.textContent = `${DAY_NAMES[dayIndex === 6 ? 0 : dayIndex + 1]} (${dateStr})`;
+
+    if (tasks.length === 0) {
+      content.innerHTML = '<div style="color:#6B6B6B;text-align:center;padding:24px;">暂无任务</div>';
+    } else {
+      content.innerHTML = tasks.map(t => `
+        <div class="modal-task-item">
+          <div class="modal-task-info">
+            <span class="modal-task-type ${t.type}">${t.type === 'manual' ? '手工更新' : 'IP更新'}</span>
+            <span class="modal-task-title">${t.title}</span>
+          </div>
+          <div style="display:flex;gap:10px;align-items:center;">
+            <div class="checkbox ${t.completed ? 'checked' : ''}" onclick="toggleCalendarTask(${t.id})">${t.completed ? '✓' : ''}</div>
+            <button class="btn btn-danger btn-small" onclick="deleteCalendarTask(${t.id})">删除</button>
+          </div>
+        </div>
+      `).join('');
+    }
+    modal.classList.add('show');
+  }
+
+  function toggleCalendarTask(id) {
+    const tasks = getCurrentWeekTasks();
+    const task = tasks.find(t => t.id === id);
+    if (task) {
+      task.completed = !task.completed;
+      saveData(data);
+      renderCalendar();
+      showDayTasks(task.dayIndex);
+      showToast(task.completed ? '✅ 已完成' : '📝 已重置');
+    }
+  }
+
+  function deleteCalendarTask(id) {
+    const tasks = getCurrentWeekTasks();
+    const task = tasks.find(t => t.id === id);
+    const dayIndex = task ? task.dayIndex : 0;
+    data.weekTasks[getWeekKey()] = tasks.filter(t => t.id !== id);
+    saveData(data);
+    renderCalendar();
+    showDayTasks(dayIndex);
+    showToast('🗑️ 已删除');
+  }
+
+  function closeModal(e) {
+    if (!e || e.target.id === 'taskModal') {
+      document.getElementById('taskModal').classList.remove('show');
+    }
+  }
+
+  // ===== 健康部分 =====
+  function formatTime(dateStr) {
+    if (!dateStr) return '';
+    return new Date(dateStr).toLocaleTimeString('zh-CN', { hour: '2-digit', minute: '2-digit' });
+  }
+
+  function formatDate(dateStr) {
+    if (!dateStr) return '';
+    const d = new Date(dateStr);
+    const today = new Date().toDateString();
+    const yesterday = new Date(); yesterday.setDate(yesterday.getDate() - 1);
+    if (d.toDateString() === today) return '今天';
+    if (d.toDateString() === yesterday.toDateString()) return '昨天';
+    return d.toLocaleDateString('zh-CN', { month: 'short', day: 'numeric' });
+  }
+
+  function renderHealth() {
+    const grid = document.getElementById('healthGrid');
+    const milk = data.health.noMilk;
+    const poop = data.health.poop;
+    const water = data.health.water;
+
+    grid.innerHTML = `
+      <div class="health-card ${milk.completed ? 'completed' : ''}">
+        <div class="health-left">
+          <div class="health-emoji">🥛</div>
+          <div class="health-info">
+            <div class="health-name">戒牛奶</div>
+            <div class="health-time">${milk.completed ? '今日已打卡' : '未打卡'}</div>
+          </div>
+        </div>
+        <div class="health-toggle ${milk.completed ? 'on' : ''}" onclick="toggleMilk()"></div>
+      </div>
+
+      <div class="health-card ${poop.count > 0 ? 'completed' : ''}">
+        <div class="health-left">
+          <div class="health-emoji">💩</div>
+          <div class="health-info">
+            <div class="health-name">拉粑粑</div>
+            <div class="health-count">今日 ${poop.count} 次</div>
+          </div>
+        </div>
+        <button class="health-btn" onclick="addPoop()">+ 记录</button>
+      </div>
+
+      <div class="health-card ${water.liters > 0 ? 'completed' : ''}">
+        <div class="health-left">
+          <div class="health-emoji">💧</div>
+          <div class="health-info">
+            <div class="health-name">喝水</div>
+            <div class="health-time">${water.liters.toFixed(1)}L 今日</div>
+          </div>
+        </div>
+        <div class="water-control">
+          <button class="water-btn" onclick="changeWater(-0.5)">−</button>
+          <div class="water-value">${water.liters.toFixed(1)}L</div>
+          <button class="water-btn" onclick="changeWater(0.5)">+</button>
+        </div>
+      </div>
+    `;
+    renderHealthHistory();
+  }
+
+  function toggleMilk() {
+    const h = data.health.noMilk;
+    h.completed = !h.completed;
+    saveData(data);
+    renderHealth();
+    showToast(h.completed ? '🥛 戒牛奶打卡成功' : '🥛 已取消');
+  }
+
+  function addPoop() {
+    const h = data.health.poop;
+    const now = new Date().toISOString();
+    h.count = (h.count || 0) + 1;
+    h.history.push({ time: now, id: Date.now() });
+    saveData(data);
+    renderHealth();
+    showToast(`💩 记录成功！今日第 ${h.count} 次`);
+  }
+
+  function deletePoopRecord(recordId) {
+    const h = data.health.poop;
+    const record = h.history.find(r => r.id === recordId);
+    if (record) {
+      h.count = Math.max(0, h.count - 1);
+      h.history = h.history.filter(r => r.id !== recordId);
+      saveData(data);
+      renderHealth();
+      showToast('🗑️ 记录已删除');
+    }
+  }
+
+  function changeWater(delta) {
+    const h = data.health.water;
+    const newLiters = Math.max(0, (h.liters || 0) + delta);
+
+    if (delta > 0) {
+      const now = new Date().toISOString();
+      h.history.push({ time: now, amount: delta, id: Date.now() });
+      showToast(`💧 喝水 +${delta}L，今日共 ${newLiters.toFixed(1)}L`);
+    } else {
+      showToast(`💧 已减去 ${Math.abs(delta)}L，今日共 ${newLiters.toFixed(1)}L`);
+    }
+
+    h.liters = newLiters;
+    saveData(data);
+    renderHealth();
+  }
+
+  function deleteWaterRecord(recordId) {
+    const h = data.health.water;
+    const record = h.history.find(r => r.id === recordId);
+    if (record) {
+      h.liters = Math.max(0, (h.liters || 0) - record.amount);
+      h.history = h.history.filter(r => r.id !== recordId);
+      saveData(data);
+      renderHealth();
+      showToast('🗑️ 喝水记录已删除');
+    }
+  }
+
+  function renderHealthHistory() {
+    const container = document.getElementById('healthHistory');
+    const today = new Date().toDateString();
+    const todayRecords = [];
+
+    // 戒牛奶
+    if (data.health.noMilk.completed) {
+      todayRecords.push({ type: '戒牛奶', time: '今日已打卡', emoji: '🥛', id: null });
+    }
+
+    // 拉粑粑
+    data.health.poop.history.forEach(r => {
+      if (new Date(r.time).toDateString() === today) {
+        todayRecords.push({ type: '拉粑粑', time: formatTime(r.time), emoji: '💩', id: r.id, deletable: true, itemType: 'poop' });
+      }
+    });
+
+    // 喝水
+    data.health.water.history.forEach(r => {
+      if (new Date(r.time).toDateString() === today) {
+        todayRecords.push({ type: '喝水', time: formatTime(r.time), emoji: '💧', extra: `+${r.amount}L`, id: r.id, deletable: true, itemType: 'water' });
+      }
+    });
+
+    todayRecords.sort((a, b) => {
+      const ta = a.time === '今日已打卡' ? '00:00' : a.time;
+      const tb = b.time === '今日已打卡' ? '00:00' : b.time;
+      return ta.localeCompare(tb);
+    });
+
+    if (todayRecords.length === 0) {
+      container.innerHTML = '';
+      return;
+    }
+
+    container.innerHTML = `
+      <div class="history-title">📅 今日记录</div>
+      <div class="history-list">
+        ${todayRecords.map(r => `
+          <div class="history-item">
+            <div class="history-item-left">
+              <span class="history-item-emoji">${r.emoji}</span>
+              <span class="history-item-text">${r.type}${r.extra ? ' ' + r.extra : ''}<span class="history-item-time">${r.time}</span></span>
+            </div>
+            ${r.deletable ? `<button class="history-delete" onclick="${r.itemType === 'poop' ? 'deletePoopRecord' : 'deleteWaterRecord'}(${r.id})">×</button>` : ''}
+          </div>
+        `).join('')}
+      </div>
+    `;
+  }
+
+  // ===== 攀岩部分 =====
+  function getLevelClass(level) {
+    const l = level.toLowerCase();
+    if (l.includes('v1')) return 'level-v1';
+    if (l.includes('v2')) return 'level-v2';
+    if (l.includes('v3')) return 'level-v3';
+    if (l.includes('v4')) return 'level-v4';
+    if (l.includes('v5')) return 'level-v5';
+    return 'level-other';
+  }
+
+  function renderClimbs() {
+    const list = document.getElementById('climbList');
+    const stats = document.getElementById('climbStats');
+    if (data.climbs.length === 0) {
+      list.innerHTML = '<div class="empty-state">🧗 还没有记录，快去攀岩吧！</div>';
+      stats.innerHTML = '';
+      return;
+    }
+    const recent = data.climbs.slice(-10).reverse();
+    list.innerHTML = recent.map((climb, idx) => `
+      <div class="climb-item">
+        <div class="climb-info">
+          <span class="climb-level ${getLevelClass(climb.level)}">${climb.level}</span>
+          <span class="climb-date">${climb.date}</span>
+        </div>
+        <button class="climb-delete" onclick="deleteClimb(${data.climbs.length - 1 - idx})">×</button>
+      </div>
+    `).join('');
+
+    const thisWeek = getWeekClimbs();
+    stats.innerHTML = `
+      <div class="stat-box"><div class="stat-value">${thisWeek}</div><div class="stat-label">本周次数</div></div>
+      <div class="stat-box"><div class="stat-value">${data.climbs.length}</div><div class="stat-label">总记录数</div></div>
+    `;
+  }
+
+  function getWeekClimbs() {
+    const now = new Date();
+    const weekStart = new Date(now);
+    weekStart.setDate(now.getDate() - now.getDay());
+    weekStart.setHours(0, 0, 0, 0);
+    return data.climbs.filter(c => new Date(c.date) >= weekStart).length;
+  }
+
+  function addClimb() {
+    const input = document.getElementById('climbInput');
+    const level = input.value.trim();
+    if (!level) { showToast('⚠️ 请输入线路难度'); return; }
+    const now = new Date();
+    data.climbs.push({ level: level.toUpperCase(), date: now.toLocaleDateString('zh-CN'), timestamp: now.getTime() });
+    saveData(data);
+    input.value = '';
+    renderClimbs();
+    showToast('🧗 攀岩记录添加成功！');
+  }
+
+  function deleteClimb(index) {
+    data.climbs.splice(index, 1);
+    saveData(data);
+    renderClimbs();
+    showToast('🗑️ 记录已删除');
+  }
+
+  document.getElementById('taskTitle')?.addEventListener('keypress', e => { if (e.key === 'Enter') addCalendarTask(); });
+  document.getElementById('climbInput')?.addEventListener('keypress', e => { if (e.key === 'Enter') addClimb(); });
+
+  updateDate();
+  renderCalendar();
+  renderHealth();
+  renderClimbs();
+</script>
+
+</body>
+</html>
