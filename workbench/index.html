@@ -1,1211 +1,615 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-  <meta name="theme-color" content="#1A1A1A">
-  <title>📱 我的工作台</title>
-  <style>
-    :root {
-      --bg: #1A1A1A;
-      --card-bg: #252525;
-      --primary: #0FF3FF;
-      --primary-dim: rgba(15, 243, 255, 0.12);
-      --accent: #FFD70F;
-      --accent-dim: rgba(255, 215, 15, 0.15);
-      --success: #27AE60;
-      --danger: #E74C3C;
-      --info: #3498DB;
-      --neutral-mid: #6B6B6B;
-      --neutral-light: #BDBDBD;
-      --border: #333333;
-      --radius: 16px;
-      --shadow: 0 8px 24px rgba(0,0,0,0.4);
-    }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=no,viewport-fit=cover">
+<title>津津工作台</title>
+<style>
+@font-face{
+  font-family:'ChosunilboNM';
+  src:url('ChosunilboNM.woff') format('woff');
+  font-display:swap;
+}
+:root {
+  --bg: #FFFDF7; --card: #FFFFFF; --tile: #FBF1DC;
+  --primary: #F5B800; --primary-light: #FFD54F; --primary-deep: #D49400;
+  --green: #7EC8A0; --orange: #FF8A65; --sky: #87CEEB;
+  --ink: #6B4F2A; --ink2: #8A8178; --ink3: #A99E8F;
+  --radius: 16px; --shadow: 0 4px 12px rgba(245,184,0,.08);
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{
+  font-family:-apple-system,'PingFang SC','Noto Sans SC','Helvetica Neue',sans-serif;
+  font-size:15px;line-height:1.6;color:var(--ink);
+  background:linear-gradient(180deg,#FFFDF7 0%,#F8E8C8 100%);max-width:480px;margin:0 auto;
+  min-height:100dvh;padding-bottom:40px;
+}
+::selection{background:var(--primary-light);color:var(--ink)}
 
-    * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+/* Tabs */
+.tabs{display:flex;position:sticky;top:0;z-index:10;background:var(--bg);padding:12px 12px 0;gap:6px}
+.tab{
+  flex:1;text-align:center;padding:10px 4px;border-radius:12px 12px 0 0;
+  font-size:.8rem;font-weight:600;color:var(--ink3);cursor:pointer;
+  background:transparent;border:none;transition:.2s
+}
+.tab.active{color:var(--primary);background:var(--card);box-shadow:0 -2px 10px rgba(245,184,0,.16)}
+.tab .emoji{display:block;font-size:1.2rem;margin-bottom:2px}
 
-    body {
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'PingFang SC', 'Microsoft YaHei', sans-serif;
-      background: var(--bg);
-      color: #fff;
-      min-height: 100vh;
-      padding-bottom: 80px;
-      -webkit-font-smoothing: antialiased;
-    }
+/* Panels */
+.panel{display:none;background:var(--card);padding:20px 16px;border-radius:0 0 var(--radius) var(--radius);margin:0 12px;}
+.panel.active{display:block}
 
-    .header {
-      background: linear-gradient(135deg, #0a0a0a 0%, #1A1A1A 100%);
-      color: var(--primary);
-      padding: 32px 20px 40px;
-      border-bottom: 1px solid var(--border);
-      position: relative;
-    }
+.section-title{font-size:1.1rem;font-weight:700;margin-bottom:16px;display:flex;align-items:center;gap:8px}
+.section-title .icon{font-size:1.3rem}
 
-    .header::after {
-      content: '';
-      position: absolute;
-      bottom: 0;
-      left: 20px;
-      right: 20px;
-      height: 2px;
-      background: linear-gradient(90deg, var(--primary), var(--accent));
-      border-radius: 2px;
-    }
+/* Calendar */
+.calendar{display:grid;grid-template-columns:repeat(7,1fr);gap:6px;margin-bottom:16px}
+.cal-day{
+  aspect-ratio:1;border-radius:12px;background:var(--tile);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  font-size:.7rem;font-weight:600;color:var(--ink2);cursor:pointer;
+  position:relative;transition:.2s;border:2px solid transparent;min-height:56px
+}
+.cal-day.today{border-color:var(--primary);background:#FFF3D6}
+.cal-day .day-stars{display:flex;justify-content:center;gap:1px;margin-top:1px;line-height:1}
+.cal-day .day-stars i{font-style:normal;font-size:.55rem;color:var(--primary);-webkit-text-stroke:.4px #FFFDF7;display:inline-block;transform:rotate(-10deg)}
+.cal-day .day-stars i:nth-child(even){transform:rotate(10deg)}
+.cal-day .day-stars em{font-style:normal;font-size:.5rem;color:var(--primary-deep);font-weight:700}
+.cal-day .day-num{font-size:.85rem;margin-bottom:2px}
+.cal-day .day-label{font-size:.6rem;color:var(--ink3)}
 
-    .header h1 {
-      font-size: 26px;
-      font-weight: 800;
-      letter-spacing: -0.5px;
-      background: linear-gradient(135deg, var(--primary), var(--accent));
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
-    }
+/* Day detail */
+.day-detail{display:none;margin-bottom:16px}
+.day-detail.active{display:block}
+.day-detail h4{font-size:.9rem;margin-bottom:8px;color:var(--ink2)}
+.task-item{
+  display:flex;align-items:center;gap:8px;padding:10px 12px;
+  background:var(--tile);border-radius:10px;margin-bottom:6px
+}
+.task-item .badge{
+  font-size:.65rem;font-weight:600;padding:3px 8px;border-radius:20px;white-space:nowrap
+}
+.badge-media{background:rgba(245,184,0,.14);color:var(--primary-deep)}
+.badge-daily{background:rgba(135,206,235,.2);color:#3E93B8}
+.badge-custom{background:rgba(255,138,101,.15);color:#E06A44}
+.task-item .task-title{flex:1;font-size:.85rem}
+.task-item .del-btn{font-size:.75rem;color:var(--ink3);cursor:pointer;border:none;background:none;padding:4px}
 
-    .header .date {
-      color: var(--neutral-light);
-      font-size: 14px;
-      margin-top: 6px;
-      font-weight: 500;
-    }
+/* Add task form */
+.add-form{display:flex;flex-direction:column;gap:8px;margin-bottom:16px}
+.add-form select,.add-form input{
+  padding:10px 12px;border-radius:10px;border:1px solid #EAD9B4;
+  font-size:.85rem;background:var(--bg);width:100%
+}
+.add-form .row{display:flex;gap:8px}
+.add-form .save-btn{
+  padding:10px;border-radius:10px;background:var(--primary);color:#FFFDF7;
+  border:none;font-size:.85rem;font-weight:600;cursor:pointer
+}
 
-    .container {
-      padding: 24px 16px 80px;
-      max-width: 480px;
-      margin: 0 auto;
-    }
+/* Milk counter */
+.big-counter{text-align:center;padding:24px 0}
+.big-counter .count{font-size:3.5rem;font-weight:900;line-height:1;font-family:'Montserrat','Poppins','Georgia',serif}
+.big-counter .count.cheat{color:var(--primary-deep)}
+.big-counter .label{font-size:.85rem;color:var(--ink3);margin-top:6px}
+.big-counter .cheat-badge{
+  display:inline-block;padding:6px 16px;border-radius:20px;
+  background:var(--primary);color:#FFFDF7;font-weight:700;font-size:.85rem;margin-top:8px
+}
 
-    .section {
-      background: var(--card-bg);
-      border-radius: var(--radius);
-      padding: 20px;
-      margin-bottom: 24px;
-      box-shadow: var(--shadow);
-      border: 1px solid var(--border);
-    }
+.toggle-row{display:flex;align-items:center;justify-content:space-between;padding:16px;background:var(--tile);border-radius:12px;margin-bottom:16px}
+.toggle-row .toggle-label{font-weight:600;font-size:.9rem}
+.switch{position:relative;width:52px;height:30px}
+.switch input{opacity:0;width:0;height:0}
+.switch .slider{
+  position:absolute;cursor:pointer;top:0;left:0;right:0;bottom:0;
+  background:#E6D7B4;border-radius:30px;transition:.3s
+}
+.switch .slider::before{
+  content:'';position:absolute;height:24px;width:24px;left:3px;bottom:3px;
+  background:#fff;border-radius:50%;transition:.3s
+}
+.switch input:checked+.slider{background:var(--green)}
+.switch input:checked+.slider::before{transform:translateX(22px)}
+.switch.cheat input:checked+.slider{background:var(--primary)}
 
-    .section-header {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      margin-bottom: 18px;
-    }
+/* Photos */
+.photo-section{display:flex;gap:12px;margin-bottom:16px}
+.photo-card{
+  flex:1;background:var(--tile);border-radius:12px;
+  display:flex;flex-direction:column;align-items:center;padding:16px 8px;
+  gap:8px;cursor:pointer;border:2px dashed #E5CF9E;transition:.2s;min-height:100px;justify-content:center
+}
+.photo-card.has-photo{border-style:solid;border-color:var(--green)}
+.photo-card img{width:100%;border-radius:8px;object-fit:cover;max-height:160px}
+.photo-card .label{font-size:.75rem;color:var(--ink3);font-weight:500}
+.photo-card .icon{font-size:1.5rem}
 
-    .section-title {
-      font-size: 18px;
-      font-weight: 700;
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      color: var(--primary);
-    }
+/* Counters */
+.counter-row{display:flex;gap:12px;margin-bottom:16px}
+.counter-box{
+  flex:1;background:var(--tile);border-radius:16px;
+  padding:20px 16px;text-align:center
+}
+.counter-box .emoji{font-size:1.5rem;margin-bottom:4px}
+.counter-box .num{font-size:2.2rem;font-weight:900;line-height:1;font-family:'Montserrat','Poppins','Georgia',serif}
+.counter-box .unit{font-size:.75rem;color:var(--ink3)}
+.counter-box .btn-group{display:flex;gap:8px;justify-content:center;margin-top:12px}
+.btn-round{
+  width:40px;height:40px;border-radius:50%;border:none;
+  font-size:1.2rem;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center
+}
+.btn-plus{background:var(--primary);color:#FFFDF7}
+.btn-minus{background:#EAD9B4;color:var(--ink2)}
 
-    .section-icon {
-      width: 38px;
-      height: 38px;
-      border-radius: 12px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 20px;
-      background: var(--primary-dim);
-      border: 1px solid rgba(15, 243, 255, 0.2);
-    }
+/* Collapse */
+.collapse{margin-top:16px}
+.collapse-header{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:12px 0;cursor:pointer;border-top:1px solid #F0E1C0;font-weight:600;font-size:.9rem
+}
+.collapse-header .arrow{transition:.25s;font-size:.75rem}
+.collapse.open .arrow{transform:rotate(180deg)}
+.collapse-body{display:none;padding-bottom:12px}
+.collapse.open .collapse-body{display:block}
 
-    .icon-health { background: rgba(39, 174, 96, 0.12); border-color: rgba(39, 174, 96, 0.25); }
-    .icon-sport { background: var(--accent-dim); border-color: rgba(255, 215, 15, 0.25); }
+/* Weekly summary */
+.summary-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:4px}
+.summary-day{
+  text-align:center;padding:8px 2px;border-radius:8px;background:var(--bg);font-size:.65rem
+}
+.summary-day .s-num{font-size:.9rem;font-weight:700;display:block}
+.summary-day.done{background:rgba(126,200,160,.16);color:#4F9C6F}
+.summary-day.missed{background:rgba(255,138,101,.14);color:#E06A44}
 
-    .badge {
-      font-size: 11px;
-      padding: 5px 12px;
-      border-radius: 20px;
-      font-weight: 700;
-      letter-spacing: 0.5px;
-      text-transform: uppercase;
-    }
+.photo-compare{display:flex;overflow-x:auto;gap:8px;padding-bottom:8px}
+.photo-compare .compare-card{
+  min-width:70px;border-radius:10px;background:var(--tile);padding:6px;text-align:center;font-size:.65rem
+}
+.photo-compare .compare-card img{width:100%;border-radius:6px;object-fit:cover;height:60px}
+.photo-compare .compare-card .day-label{font-weight:600;margin:4px 0}
 
-    .badge-weekly {
-      background: var(--primary-dim);
-      color: var(--primary);
-      border: 1px solid rgba(15, 243, 255, 0.25);
-    }
+.history-table{width:100%;font-size:.8rem}
+.history-table td,.history-table th{padding:8px 4px;text-align:center}
+.history-table th{color:var(--ink3);font-weight:500;border-bottom:2px solid #F0E1C0}
+.history-table td{border-bottom:1px solid #F7EEDC}
 
-    .badge-daily {
-      background: rgba(39, 174, 96, 0.12);
-      color: var(--success);
-      border: 1px solid rgba(39, 174, 96, 0.25);
-    }
 
-    /* ===== 日历任务 ===== */
-    .calendar-grid {
-      display: grid;
-      grid-template-columns: repeat(7, 1fr);
-      gap: 6px;
-      margin-bottom: 16px;
-    }
+.empty{text-align:center;color:var(--ink3);font-size:.8rem;padding:12px 0}
 
-    .calendar-day {
-      text-align: center;
-      padding: 8px 4px;
-      border-radius: 12px;
-      background: rgba(255,255,255,0.03);
-      min-height: 86px;
-      position: relative;
-      transition: all 0.2s;
-      border: 1px solid transparent;
-      cursor: pointer;
-    }
-
-    .calendar-day:hover {
-      background: rgba(255,255,255,0.06);
-      border-color: var(--border);
-    }
-
-    .calendar-day.today {
-      background: var(--primary-dim);
-      border: 1px solid var(--primary);
-      box-shadow: 0 0 12px rgba(15, 243, 255, 0.15);
-    }
-
-    .calendar-day.today .calendar-day-num {
-      color: var(--primary);
-    }
-
-    .calendar-day-label {
-      font-size: 10px;
-      color: var(--neutral-mid);
-      font-weight: 700;
-      margin-bottom: 4px;
-      letter-spacing: 1px;
-    }
-
-    .calendar-day-num {
-      font-size: 16px;
-      font-weight: 700;
-      margin-bottom: 6px;
-      color: #fff;
-    }
-
-    .calendar-tasks {
-      display: flex;
-      flex-direction: column;
-      gap: 3px;
-    }
-
-    .cal-task {
-      font-size: 9px;
-      padding: 3px 4px;
-      border-radius: 4px;
-      cursor: pointer;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      transition: all 0.2s;
-      text-align: left;
-      font-weight: 600;
-    }
-
-    .cal-task.manual {
-      background: rgba(15, 243, 255, 0.15);
-      color: var(--primary);
-      border-left: 2px solid var(--primary);
-    }
-
-    .cal-task.ip {
-      background: var(--accent-dim);
-      color: var(--accent);
-      border-left: 2px solid var(--accent);
-    }
-
-    .cal-task.completed {
-      opacity: 0.35;
-      text-decoration: line-through;
-    }
-
-    .add-task-form {
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
-      padding: 14px;
-      background: rgba(255,255,255,0.03);
-      border-radius: 14px;
-      border: 1px solid var(--border);
-    }
-
-    .form-row {
-      display: flex;
-      gap: 8px;
-    }
-
-    .form-row select, .form-row input {
-      padding: 10px 12px;
-      border: 1px solid var(--border);
-      border-radius: 10px;
-      font-size: 14px;
-      outline: none;
-      background: var(--bg);
-      color: #fff;
-      -webkit-appearance: none;
-      appearance: none;
-    }
-
-    .form-row select { min-width: 80px; }
-    .form-row select option { background: var(--bg); color: #fff; }
-    .form-row input { flex: 1; }
-    .form-row input::placeholder { color: var(--neutral-mid); }
-    .form-row select:focus, .form-row input:focus {
-      border-color: var(--primary);
-      box-shadow: 0 0 0 3px rgba(15, 243, 255, 0.1);
-    }
-
-    .btn {
-      padding: 10px 18px;
-      border: none;
-      border-radius: 10px;
-      font-size: 14px;
-      font-weight: 700;
-      cursor: pointer;
-      transition: all 0.2s;
-      letter-spacing: 0.3px;
-      -webkit-appearance: none;
-      appearance: none;
-    }
-
-    .btn-primary {
-      background: var(--accent);
-      color: var(--bg);
-    }
-    .btn-primary:hover {
-      background: #ffe135;
-      transform: translateY(-1px);
-      box-shadow: 0 4px 12px rgba(255, 215, 15, 0.3);
-    }
-    .btn-small { padding: 8px 14px; font-size: 12px; }
-    .btn-danger {
-      background: rgba(231, 76, 60, 0.15);
-      color: var(--danger);
-      border: 1px solid rgba(231, 76, 60, 0.3);
-    }
-    .btn-danger:hover { background: rgba(231, 76, 60, 0.25); }
-    .btn-secondary {
-      background: var(--primary-dim);
-      color: var(--primary);
-      border: 1px solid rgba(15, 243, 255, 0.25);
-    }
-    .btn-secondary:hover { background: rgba(15, 243, 255, 0.2); }
-
-    /* ===== 健康部分 ===== */
-    .health-grid {
-      display: flex;
-      flex-direction: column;
-      gap: 12px;
-    }
-
-    .health-card {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 14px 16px;
-      background: rgba(255,255,255,0.03);
-      border-radius: 14px;
-      border: 1px solid var(--border);
-      transition: all 0.2s;
-    }
-    .health-card:hover {
-      border-color: rgba(255,255,255,0.1);
-      background: rgba(255,255,255,0.05);
-    }
-    .health-card.completed {
-      background: rgba(39, 174, 96, 0.08);
-      border-color: rgba(39, 174, 96, 0.3);
-    }
-
-    .health-left {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-    }
-
-    .health-emoji {
-      font-size: 26px;
-      width: 44px;
-      height: 44px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      background: rgba(255,255,255,0.05);
-      border-radius: 12px;
-      border: 1px solid var(--border);
-    }
-
-    .health-info {
-      display: flex;
-      flex-direction: column;
-    }
-    .health-name { font-size: 15px; font-weight: 600; color: #fff; }
-    .health-time { font-size: 11px; color: var(--neutral-mid); margin-top: 3px; }
-    .health-count { font-size: 11px; color: var(--success); margin-top: 2px; font-weight: 600; }
-
-    .health-right {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-
-    .water-control {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      background: var(--bg);
-      padding: 4px;
-      border-radius: 10px;
-      border: 1px solid var(--border);
-    }
-    .water-btn {
-      width: 32px;
-      height: 32px;
-      border: none;
-      border-radius: 8px;
-      background: var(--primary-dim);
-      color: var(--primary);
-      font-size: 18px;
-      font-weight: 700;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      transition: all 0.2s;
-      -webkit-appearance: none;
-      appearance: none;
-    }
-    .water-btn:hover {
-      background: var(--primary);
-      color: var(--bg);
-    }
-    .water-value {
-      font-size: 16px;
-      font-weight: 700;
-      min-width: 50px;
-      text-align: center;
-      color: var(--info);
-    }
-
-    .health-toggle {
-      width: 50px;
-      height: 28px;
-      border-radius: 14px;
-      background: var(--neutral-mid);
-      position: relative;
-      cursor: pointer;
-      transition: background 0.3s;
-      flex-shrink: 0;
-    }
-    .health-toggle.on { background: var(--success); }
-    .health-toggle::after {
-      content: '';
-      position: absolute;
-      width: 22px;
-      height: 22px;
-      background: white;
-      border-radius: 50%;
-      top: 3px;
-      left: 3px;
-      transition: transform 0.3s;
-      box-shadow: 0 1px 3px rgba(0,0,0,0.3);
-    }
-    .health-toggle.on::after { transform: translateX(22px); }
-
-    .health-btn {
-      padding: 8px 16px;
-      border: none;
-      border-radius: 10px;
-      font-size: 13px;
-      font-weight: 700;
-      cursor: pointer;
-      transition: all 0.2s;
-      background: rgba(39, 174, 96, 0.12);
-      color: var(--success);
-      border: 1px solid rgba(39, 174, 96, 0.25);
-      -webkit-appearance: none;
-      appearance: none;
-    }
-    .health-btn:hover {
-      background: rgba(39, 174, 96, 0.25);
-    }
-
-    .health-history {
-      margin-top: 14px;
-      padding-top: 14px;
-      border-top: 1px solid var(--border);
-    }
-    .history-title {
-      font-size: 12px;
-      font-weight: 700;
-      color: var(--neutral-mid);
-      margin-bottom: 10px;
-      letter-spacing: 0.5px;
-      text-transform: uppercase;
-    }
-    .history-list {
-      display: flex;
-      flex-direction: column;
-      gap: 6px;
-    }
-    .history-item {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 8px 12px;
-      border-radius: 10px;
-      background: rgba(255,255,255,0.03);
-      border: 1px solid var(--border);
-      font-size: 13px;
-    }
-    .history-item-left {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-    .history-item-emoji { font-size: 16px; }
-    .history-item-text { color: #fff; }
-    .history-item-time { color: var(--neutral-mid); font-size: 11px; margin-left: 4px; }
-    .history-delete {
-      background: none;
-      border: none;
-      color: var(--danger);
-      cursor: pointer;
-      font-size: 16px;
-      opacity: 0.5;
-      transition: opacity 0.2s;
-      padding: 2px 6px;
-      -webkit-appearance: none;
-      appearance: none;
-    }
-    .history-delete:hover { opacity: 1; }
-
-    /* ===== 攀岩部分 ===== */
-    .climb-input {
-      display: flex;
-      gap: 8px;
-      margin-bottom: 16px;
-    }
-    .climb-input input {
-      flex: 1;
-      padding: 12px 16px;
-      border: 1px solid var(--border);
-      border-radius: 12px;
-      font-size: 15px;
-      outline: none;
-      transition: all 0.2s;
-      background: var(--bg);
-      color: #fff;
-      -webkit-appearance: none;
-      appearance: none;
-    }
-    .climb-input input::placeholder { color: var(--neutral-mid); }
-    .climb-input input:focus {
-      border-color: var(--primary);
-      box-shadow: 0 0 0 3px rgba(15, 243, 255, 0.1);
-    }
-
-    .climb-list {
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
-    }
-    .climb-item {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 12px 16px;
-      background: rgba(255,255,255,0.03);
-      border-radius: 10px;
-      border: 1px solid transparent;
-      transition: all 0.2s;
-    }
-    .climb-item:hover {
-      border-color: var(--border);
-      background: rgba(255,255,255,0.05);
-    }
-    .climb-info {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }
-    .climb-level {
-      padding: 5px 12px;
-      border-radius: 8px;
-      font-size: 12px;
-      font-weight: 800;
-      letter-spacing: 0.5px;
-    }
-    .level-v1 { background: rgba(52, 152, 219, 0.15); color: #5DADE2; border: 1px solid rgba(52, 152, 219, 0.3); }
-    .level-v2 { background: rgba(191, 176, 99, 0.15); color: #BFB063; border: 1px solid rgba(191, 176, 99, 0.3); }
-    .level-v3 { background: var(--accent-dim); color: var(--accent); border: 1px solid rgba(255, 215, 15, 0.3); }
-    .level-v4 { background: rgba(243, 156, 18, 0.15); color: #F39C12; border: 1px solid rgba(243, 156, 18, 0.3); }
-    .level-v5 { background: rgba(231, 76, 60, 0.15); color: #E74C3C; border: 1px solid rgba(231, 76, 60, 0.3); }
-    .level-other { background: rgba(133, 133, 133, 0.15); color: #858585; border: 1px solid rgba(133, 133, 133, 0.3); }
-    .climb-date { font-size: 12px; color: var(--neutral-mid); }
-    .climb-delete {
-      background: none;
-      border: none;
-      color: var(--danger);
-      cursor: pointer;
-      font-size: 20px;
-      padding: 4px;
-      opacity: 0.5;
-      transition: opacity 0.2s;
-      -webkit-appearance: none;
-      appearance: none;
-    }
-    .climb-delete:hover { opacity: 1; }
-
-    .climb-stats {
-      display: grid;
-      grid-template-columns: repeat(2, 1fr);
-      gap: 12px;
-      margin-top: 16px;
-      padding-top: 16px;
-      border-top: 1px solid var(--border);
-    }
-    .stat-box {
-      text-align: center;
-      padding: 14px;
-      background: rgba(255,255,255,0.03);
-      border-radius: 12px;
-      border: 1px solid var(--border);
-    }
-    .stat-value {
-      font-size: 28px;
-      font-weight: 800;
-      background: linear-gradient(135deg, var(--primary), var(--accent));
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
-    }
-    .stat-label {
-      font-size: 12px;
-      color: var(--neutral-mid);
-      margin-top: 6px;
-      font-weight: 500;
-    }
-    .empty-state {
-      text-align: center;
-      padding: 28px;
-      color: var(--neutral-mid);
-      font-size: 14px;
-    }
-
-    .toast {
-      position: fixed;
-      bottom: 24px;
-      left: 50%;
-      transform: translateX(-50%) translateY(100px);
-      background: var(--card-bg);
-      color: #fff;
-      padding: 14px 28px;
-      border-radius: 14px;
-      font-size: 14px;
-      font-weight: 600;
-      z-index: 1000;
-      transition: transform 0.3s ease;
-      box-shadow: 0 10px 30px rgba(0,0,0,0.5);
-      border: 1px solid var(--border);
-      border-left: 3px solid var(--primary);
-    }
-    .toast.show { transform: translateX(-50%) translateY(0); }
-
-    .task-modal-overlay {
-      position: fixed;
-      top: 0; left: 0; right: 0; bottom: 0;
-      background: rgba(0,0,0,0.7);
-      backdrop-filter: blur(4px);
-      -webkit-backdrop-filter: blur(4px);
-      display: none;
-      align-items: center;
-      justify-content: center;
-      z-index: 999;
-      padding: 20px;
-    }
-    .task-modal-overlay.show { display: flex; }
-    .task-modal {
-      background: var(--card-bg);
-      border-radius: 20px;
-      padding: 24px;
-      width: 100%;
-      max-width: 380px;
-      max-height: 80vh;
-      overflow-y: auto;
-      border: 1px solid var(--border);
-      box-shadow: 0 20px 50px rgba(0,0,0,0.5);
-    }
-    .task-modal h3 {
-      margin-bottom: 18px;
-      font-size: 18px;
-      color: var(--primary);
-      font-weight: 700;
-    }
-    .modal-task-item {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 12px 0;
-      border-bottom: 1px solid var(--border);
-    }
-    .modal-task-info {
-      display: flex;
-      flex-direction: column;
-      gap: 4px;
-    }
-    .modal-task-type {
-      font-size: 10px;
-      padding: 3px 10px;
-      border-radius: 6px;
-      font-weight: 700;
-      letter-spacing: 0.5px;
-      width: fit-content;
-    }
-    .modal-task-type.manual { background: var(--primary-dim); color: var(--primary); }
-    .modal-task-type.ip { background: var(--accent-dim); color: var(--accent); }
-    .modal-task-title { font-size: 14px; font-weight: 500; color: #fff; }
-    .modal-close { margin-top: 18px; width: 100%; }
-
-    .checkbox {
-      width: 22px;
-      height: 22px;
-      border: 2px solid var(--neutral-mid);
-      border-radius: 6px;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 13px;
-      transition: all 0.2s;
-      flex-shrink: 0;
-    }
-    .checkbox.checked {
-      background: var(--success);
-      border-color: var(--success);
-      color: white;
-    }
-  </style>
+/* Splash screen */
+.splash{
+  position:fixed;inset:0;z-index:999;
+  background:url('朦胧黄昏胶片.jpg') center/cover no-repeat;
+  display:flex;align-items:center;justify-content:center;
+  transition:opacity .6s ease;cursor:pointer
+}
+.splash.hide{opacity:0;pointer-events:none}
+.splash::before{ /* 胶片颗粒 */
+  content:'';position:absolute;inset:0;pointer-events:none;opacity:.32;
+  background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/><feColorMatrix type='saturate' values='0'/></filter><rect width='160' height='160' filter='url(%23n)'/></svg>")
+}
+.splash::after{ /* 漏光 + 暗角 */
+  content:'';position:absolute;inset:0;pointer-events:none;
+  background:
+    radial-gradient(120% 80% at 82% 8%, rgba(255,160,90,.4), transparent 55%),
+    radial-gradient(100% 70% at 8% 92%, rgba(255,100,70,.28), transparent 55%),
+    linear-gradient(180deg, rgba(28,14,8,.28), transparent 45%, rgba(28,14,8,.4))
+}
+.splash-text{
+  color:#FFFDF7;font-family:'ChosunilboNM','Chosunilbo NM',sans-serif;
+  font-size:1.9rem;font-weight:400;letter-spacing:.3em;text-indent:.3em;
+  position:relative;z-index:2
+}
+</style>
 </head>
 <body>
 
-<div class="header">
-  <div class="container">
-    <h1>📱 我的工作台</h1>
-    <div class="date" id="currentDate"></div>
+<!-- Splash screen -->
+<div class="splash" id="splash">
+  <div class="splash-text">祝你好好生活</div>
+</div>
+
+<!-- Tabs -->
+<div class="tabs">
+  <button class="tab active" data-tab="tasks"><span class="emoji">📋</span>每周任务</button>
+  <button class="tab" data-tab="milk"><span class="emoji">🥛</span>戒牛奶</button>
+  <button class="tab" data-tab="body"><span class="emoji">💩</span>拉粑喝水</button>
+</div>
+
+<!-- Panel 1: 每周任务 -->
+<div class="panel active" id="panel-tasks">
+  <div class="section-title"><span class="icon">📋</span>每周任务</div>
+  <div class="calendar" id="taskCal"></div>
+  <div class="day-detail" id="dayDetail">
+    <h4 id="dayDetailTitle"></h4>
+    <div id="dayTaskList"></div>
+  </div>
+
+  <div class="add-form">
+    <select id="taskType">
+      <option value="自媒体更新">自媒体更新</option>
+      <option value="日常事件">日常事件</option>
+      <option value="__custom">自定义…</option>
+    </select>
+    <input type="text" id="customType" placeholder="输入自定义类型" style="display:none">
+    <div class="row">
+      <select id="taskDay">
+        <option value="周一">周一</option><option value="周二">周二</option>
+        <option value="周三">周三</option><option value="周四">周四</option>
+        <option value="周五">周五</option><option value="周六">周六</option>
+        <option value="周日">周日</option>
+      </select>
+      <input type="text" id="taskTitle" placeholder="更新内容标题…">
+    </div>
+    <button class="save-btn" id="addTaskBtn">➕ 添加任务</button>
+  </div>
+
+  <div class="collapse" id="taskSummary">
+    <div class="collapse-header"><span>📊 本周总结</span><span class="arrow">▼</span></div>
+    <div class="collapse-body"><div id="taskSummaryContent"></div></div>
   </div>
 </div>
 
-<div class="container">
-  <!-- 每周任务日历 -->
-  <div class="section">
-    <div class="section-header">
-      <div class="section-title">
-        <div class="section-icon icon-task">📋</div>
-        每周任务
-      </div>
-      <span class="badge badge-weekly">本周</span>
-    </div>
-    <div class="calendar-grid" id="calendarGrid"></div>
+<!-- Panel 2: 戒牛奶 -->
+<div class="panel" id="panel-milk">
+  <div class="section-title"><span class="icon">🥛</span>戒牛奶</div>
 
-    <div class="add-task-form">
-      <div class="form-row">
-        <select id="taskDay">
-          <option value="1">周一</option>
-          <option value="2">周二</option>
-          <option value="3">周三</option>
-          <option value="4">周四</option>
-          <option value="5">周五</option>
-          <option value="6">周六</option>
-          <option value="0">周日</option>
-        </select>
-        <select id="taskType">
-          <option value="manual">手工更新</option>
-          <option value="ip">IP更新</option>
-        </select>
-      </div>
-      <div class="form-row">
-        <input type="text" id="taskTitle" placeholder="填写更新内容标题...">
-        <button class="btn btn-primary btn-small" onclick="addCalendarTask()">添加</button>
-      </div>
+  <div class="big-counter" id="milkCounter">
+    <div class="count" id="milkDays">--</div>
+    <div class="label">已戒第 <span id="milkDaysNum">--</span> 天</div>
+    <div class="cheat-badge" id="cheatBadge" style="display:none">🎉 放纵日</div>
+  </div>
+
+  <div class="toggle-row">
+    <span class="toggle-label">今日打卡</span>
+    <label class="switch" id="milkSwitchWrap">
+      <input type="checkbox" id="milkToggle">
+      <span class="slider"></span>
+    </label>
+  </div>
+
+  <div class="photo-section">
+    <div class="photo-card" id="photoFace">
+      <span class="icon">🧑</span>
+      <span class="label">脸部照片</span>
+      <input type="file" accept="image/*" capture="user" style="display:none" id="faceInput">
+    </div>
+    <div class="photo-card" id="photoLegs">
+      <span class="icon">🦵</span>
+      <span class="label">腿部照片</span>
+      <input type="file" accept="image/*" capture="environment" style="display:none" id="legsInput">
     </div>
   </div>
 
-  <!-- 每日健康 -->
-  <div class="section">
-    <div class="section-header">
-      <div class="section-title">
-        <div class="section-icon icon-health">💚</div>
-        每日健康
-      </div>
-      <span class="badge badge-daily">今日</span>
-    </div>
-    <div class="health-grid" id="healthGrid"></div>
-    <div class="health-history" id="healthHistory"></div>
-  </div>
-
-  <!-- 每周动起来 -->
-  <div class="section">
-    <div class="section-header">
-      <div class="section-title">
-        <div class="section-icon icon-sport">🧗</div>
-        每周动起来
-      </div>
-      <span class="badge badge-weekly">攀岩</span>
-    </div>
-    <div class="climb-input">
-      <input type="text" id="climbInput" placeholder="输入线路难度 (如: V2, 5.10a)" maxlength="10">
-      <button class="btn btn-primary" onclick="addClimb()">记录</button>
-    </div>
-    <div class="climb-list" id="climbList"></div>
-    <div class="climb-stats" id="climbStats"></div>
+  <div class="collapse" id="milkSummary">
+    <div class="collapse-header"><span>📊 本周总结（7天照片对比）</span><span class="arrow">▼</span></div>
+    <div class="collapse-body"><div id="milkSummaryContent"></div></div>
   </div>
 </div>
 
-<div class="toast" id="toast"></div>
+<!-- Panel 3: 拉粑喝水 -->
+<div class="panel" id="panel-body">
+  <div class="section-title"><span class="icon">💩</span>今日记录</div>
 
-<div class="task-modal-overlay" id="taskModal" onclick="closeModal(event)">
-  <div class="task-modal" onclick="event.stopPropagation()">
-    <h3 id="modalTitle">任务详情</h3>
-    <div id="modalContent"></div>
-    <button class="btn btn-secondary modal-close" onclick="closeModal()">关闭</button>
+  <div class="counter-row">
+    <div class="counter-box">
+      <div class="emoji">💧</div>
+      <div class="num" id="waterCount">0</div>
+      <div class="unit">升 / 今日</div>
+      <div class="btn-group">
+        <button class="btn-round btn-minus" id="waterMinus">−</button>
+        <button class="btn-round btn-plus" id="waterPlus">+</button>
+      </div>
+    </div>
+    <div class="counter-box">
+      <div class="emoji">💩</div>
+      <div class="num" id="poopCount">0</div>
+      <div class="unit">次 / 今日</div>
+      <div class="btn-group">
+        <button class="btn-round btn-minus" id="poopMinus">−</button>
+        <button class="btn-round btn-plus" id="poopPlus">+</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="collapse" id="bodyHistory">
+    <div class="collapse-header"><span>📅 历史记录（最近7天）</span><span class="arrow">▼</span></div>
+    <div class="collapse-body"><div id="bodyHistoryContent"></div></div>
   </div>
 </div>
 
 <script>
-  const STORAGE_KEY = 'my_workbench_brand_v3';
-  const DAY_NAMES = ['周日','周一','周二','周三','周四','周五','周六'];
-  const DAY_SHORT = ['日','一','二','三','四','五','六'];
+/* ==================== STORAGE ==================== */
+const S = {
+  get(k,d){try{const v=localStorage.getItem('jinjin_'+k);return v?JSON.parse(v):d}catch(e){return d}},
+  set(k,v){localStorage.setItem('jinjin_'+k,JSON.stringify(v))}
+};
 
-  function getData() {
-    const today = new Date().toDateString();
-    const defaultData = {
-      weekTasks: {},
-      health: {
-        noMilk: { name: '戒牛奶', emoji: '🥛', completed: false },
-        poop: { name: '拉粑粑', emoji: '💩', count: 0, history: [] },
-        water: { name: '喝水', emoji: '💧', liters: 0, history: [] }
-      },
-      climbs: [],
-      lastUpdate: today
+/* ==================== HELPERS ==================== */
+function today(){return new Date().toISOString().slice(0,10)}
+function getMonday(d){
+  const dt=new Date(d);const day=dt.getDay();
+  const diff=day===0?-6:1-day;dt.setDate(dt.getDate()+diff);
+  return dt.toISOString().slice(0,10);
+}
+function weekDays(){
+  const m=getMonday(today());const days=[];
+  for(let i=0;i<7;i++){const d=new Date(m);d.setDate(d.getDate()+i);days.push(d.toISOString().slice(0,10))}
+  return days;
+}
+function dayLabel(d){const dt=new Date(d+'T00:00');return['周日','周一','周二','周三','周四','周五','周六'][dt.getDay()]}
+function dayNum(d){return new Date(d+'T00:00').getDate()}
+function fmtDate(d){const dt=new Date(d+'T00:00');return `${dt.getMonth()+1}/${dt.getDate()}`}
+
+/* ==================== TAB SWITCHING ==================== */
+document.querySelectorAll('.tab').forEach(t=>{t.addEventListener('click',()=>{
+  document.querySelectorAll('.tab').forEach(x=>x.classList.remove('active'));
+  document.querySelectorAll('.panel').forEach(x=>x.classList.remove('active'));
+  t.classList.add('active');
+  document.getElementById('panel-'+t.dataset.tab).classList.add('active');
+  if(t.dataset.tab==='tasks')renderTasks();
+  if(t.dataset.tab==='milk')renderMilk();
+  if(t.dataset.tab==='body')renderBody();
+})});
+
+/* ==================== COLLAPSE ==================== */
+document.querySelectorAll('.collapse-header').forEach(h=>{
+  h.addEventListener('click',()=>h.parentElement.classList.toggle('open'))
+});
+
+/* ============ TASKS ============ */
+let tasks=S.get('tasks',[]);
+let selectedDay=null;
+
+function renderTasks(){
+  const cal=document.getElementById('taskCal');
+  const days=weekDays();const td=today();
+  cal.innerHTML=days.map((d,i)=>{
+    const cnt=tasks.filter(t=>t.day===dayLabel(d)).length;
+    const cls=['cal-day',d===td?'today':''].filter(Boolean).join(' ');
+    const stars=cnt>0?`<span class="day-stars">${'<i>★</i>'.repeat(Math.min(cnt,4))}${cnt>4?`<em>+${cnt-4}</em>`:''}</span>`:'';
+    return `<div class="${cls}" data-day="${dayLabel(d)}" data-date="${d}">
+      <span class="day-num">${dayNum(d)}</span><span class="day-label">${dayLabel(d)}</span>${stars}</div>`;
+  }).join('');
+
+  cal.querySelectorAll('.cal-day').forEach(el=>el.addEventListener('click',()=>{
+    selectedDay=el.dataset.day;
+    showDayDetail(el.dataset.day);
+    cal.querySelectorAll('.cal-day').forEach(x=>x.style.borderColor=x.classList.contains('today')?'var(--primary)':'transparent');
+    el.style.borderColor='var(--orange)';
+  }));
+
+  if(selectedDay)showDayDetail(selectedDay);
+  renderTaskSummary();
+}
+
+function showDayDetail(day){
+  document.getElementById('dayDetail').classList.add('active');
+  document.getElementById('dayDetailTitle').textContent=day+' 的任务';
+  const list=document.getElementById('dayTaskList');
+  const dayTasks=tasks.filter(t=>t.day===day);
+  if(!dayTasks.length){list.innerHTML='<div class="empty">暂无任务，下方添加</div>';return}
+  list.innerHTML=dayTasks.map(t=>{
+    const cls=t.type==='自媒体更新'?'badge-media':t.type==='日常事件'?'badge-daily':'badge-custom';
+    return `<div class="task-item">
+      <span class="badge ${cls}">${t.type}</span>
+      <span class="task-title">${t.title||'(无标题)'}</span>
+      <button class="del-btn" data-id="${t.id}">✕</button></div>`;
+  }).join('');
+  list.querySelectorAll('.del-btn').forEach(b=>b.addEventListener('click',()=>{
+    tasks=tasks.filter(t=>t.id!==+b.dataset.id);
+    S.set('tasks',tasks);
+    renderTasks();
+  }));
+}
+
+document.getElementById('taskType').addEventListener('change',function(){
+  document.getElementById('customType').style.display=this.value==='__custom'?'block':'none';
+});
+
+document.getElementById('addTaskBtn').addEventListener('click',()=>{
+  let type=document.getElementById('taskType').value;
+  if(type==='__custom'){type=document.getElementById('customType').value.trim();if(!type)return}
+  const day=document.getElementById('taskDay').value;
+  const title=document.getElementById('taskTitle').value.trim();
+  tasks.push({id:Date.now(),type,day,title});
+  S.set('tasks',tasks);
+  document.getElementById('taskTitle').value='';
+  document.getElementById('customType').value='';
+  selectedDay=day;
+  renderTasks();
+});
+
+function renderTaskSummary(){
+  const c=document.getElementById('taskSummaryContent');
+  const wp=weekDays().map(d=>dayLabel(d));
+  const mediaTasks=tasks.filter(t=>t.type==='自媒体更新');
+  const dailyTasks=tasks.filter(t=>t.type==='日常事件');
+  c.innerHTML=`
+    <p style="font-weight:600;margin-bottom:8px">📈 自媒体更新 · ${mediaTasks.length} 项</p>
+    <div class="summary-grid">${wp.map(d=>{
+      const count=tasks.filter(t=>t.day===d).length;
+      return `<div class="summary-day ${count>0?'done':'missed'}"><span class="s-num">${count}</span>${d}</div>`;
+    }).join('')}</div>
+    <p style="font-weight:600;margin:16px 0 8px">📝 全部任务清单</p>
+    ${tasks.length?tasks.map(t=>`<div style="font-size:.8rem;padding:4px 0;display:flex;gap:8px">
+      <span style="color:var(--ink3);min-width:36px">${t.day}</span>
+      <span style="font-size:.65rem;padding:2px 6px;border-radius:10px;background:rgba(245,184,0,.14);color:var(--primary-deep)">${t.type}</span>
+      <span>${t.title||'(无标题)'}</span></div>`).join(''):'<div class="empty">暂无任务</div>'}
+  `;
+}
+
+/* ============ MILK ============ */
+function milkData(){
+  const start=S.get('milkStart','');
+  const checks=S.get('milkChecks',{});
+  const photos=S.get('milkPhotos',{});
+  return {start,checks,photos};
+}
+
+function isCheatDay(start){
+  if(!start)return false;
+  const diff=Math.floor((new Date(today())-new Date(start))/(86400000));
+  return diff>=0&&diff%14===13; // day 14, 28, 42...
+}
+
+function renderMilk(){
+  let {start,checks,photos}=milkData();
+  const td=today();
+
+  // 首次打开：默认从打开界面的当天开始戒奶结算
+  if(!start){start=td;S.set('milkStart',start)}
+
+  const diff=Math.floor((new Date(td)-new Date(start))/(86400000));
+  const days=Math.max(0,diff);
+  const cheat=isCheatDay(start);
+
+  document.getElementById('milkDays').textContent=days;
+  document.getElementById('milkDaysNum').textContent=days;
+  document.getElementById('milkDays').className='count'+(cheat?' cheat':'');
+  document.getElementById('cheatBadge').style.display=cheat?'inline-block':'none';
+
+  const toggle=document.getElementById('milkToggle');
+  toggle.checked=!!checks[td];
+  document.getElementById('milkSwitchWrap').className='switch'+(cheat?' cheat':'');
+
+  toggle.onchange=function(){checks[td]=this.checked;S.set('milkChecks',checks);renderMilk()};
+
+  // Photos
+  const pToday=photos[td]||{};
+  renderPhotoCard('photoFace','face',pToday.face);
+  renderPhotoCard('photoLegs','legs',pToday.legs);
+
+  renderMilkSummary();
+}
+
+function renderPhotoCard(id,key,src){
+  const card=document.getElementById(id);
+  const input=card.querySelector('input');
+  if(src){
+    card.classList.add('has-photo');
+    const existing=card.querySelector('img');
+    if(existing)existing.src=src;
+    else{
+      const img=document.createElement('img');img.src=src;
+      card.querySelector('.icon')?.remove();
+      card.prepend(img);
+    }
+  }else{
+    card.classList.remove('has-photo');
+    const img=card.querySelector('img');if(img)img.remove();
+    if(!card.querySelector('.icon')){
+      const icon=document.createElement('span');icon.className='icon';
+      icon.textContent=key==='face'?'🧑':'🦵';
+      card.prepend(icon);
+    }
+  }
+  input.onchange=function(){
+    const file=this.files[0];if(!file)return;
+    const reader=new FileReader();
+    reader.onload=function(){
+      const photos=S.get('milkPhotos',{});
+      if(!photos[today()])photos[today()]={};
+      photos[today()][key]=reader.result;
+      S.set('milkPhotos',photos);
+      renderMilk();
     };
-    try {
-      const saved = localStorage.getItem(STORAGE_KEY);
-      if (saved) {
-        const data = JSON.parse(saved);
-        // 每天自动刷新健康数据
-        if (data.lastUpdate !== today) {
-          data.health.noMilk.completed = false;
-          data.health.poop.count = 0;
-          data.health.poop.history = [];
-          data.health.water.liters = 0;
-          data.health.water.history = [];
-          data.lastUpdate = today;
-          saveData(data);
-        }
-        return data;
-      }
-    } catch(e) {}
-    saveData(defaultData);
-    return defaultData;
-  }
+    reader.readAsDataURL(file);
+  };
+}
 
-  function saveData(data) {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
-  }
+document.getElementById('photoFace').addEventListener('click',function(e){
+  if(e.target.tagName==='INPUT')return;
+  this.querySelector('input').click();
+});
+document.getElementById('photoLegs').addEventListener('click',function(e){
+  if(e.target.tagName==='INPUT')return;
+  this.querySelector('input').click();
+});
 
-  let data = getData();
+function renderMilkSummary(){
+  const c=document.getElementById('milkSummaryContent');
+  const {start,checks,photos}=milkData();
+  const wd=weekDays();
+  c.innerHTML=`
+    <div class="summary-grid" style="margin-bottom:12px">${wd.map(d=>{
+      const done=!!checks[d];return `<div class="summary-day ${done?'done':'missed'}">
+        <span class="s-num">${done?'✅':'❌'}</span>${fmtDate(d)}</div>`;
+    }).join('')}</div>
+    <div class="photo-compare">${wd.map(d=>{
+      const p=photos[d]||{};
+      return `<div class="compare-card">
+        <div class="day-label">${fmtDate(d)}</div>
+        ${p.face?`<img src="${p.face}" alt="face">`:'<div style="height:60px;display:flex;align-items:center;justify-content:center;font-size:.6rem;color:var(--ink3)">无照片</div>'}
+        ${p.legs?`<img src="${p.legs}" alt="legs" style="margin-top:2px">`:''}
+      </div>`;
+    }).join('')}</div>
+  `;
+}
 
-  function showToast(msg) {
-    const toast = document.getElementById('toast');
-    toast.textContent = msg;
-    toast.classList.add('show');
-    setTimeout(() => toast.classList.remove('show'), 2200);
-  }
+/* ============ BODY (Water & Poop) ============ */
+function renderBody(){
+  const td=today();
+  const waterLogs=S.get('waterLogs',{});
+  const poopLogs=S.get('poopLogs',{});
+  document.getElementById('waterCount').textContent=waterLogs[td]||0;
+  document.getElementById('poopCount').textContent=poopLogs[td]||0;
+  renderBodyHistory();
+}
 
-  function updateDate() {
-    const now = new Date();
-    const options = { year: 'numeric', month: 'long', day: 'numeric', weekday: 'long' };
-    document.getElementById('currentDate').textContent = now.toLocaleDateString('zh-CN', options);
-  }
+document.getElementById('waterPlus').addEventListener('click',()=>{
+  const td=today();const logs=S.get('waterLogs',{});
+  logs[td]=(logs[td]||0)+1;S.set('waterLogs',logs);renderBody();
+});
+document.getElementById('waterMinus').addEventListener('click',()=>{
+  const td=today();const logs=S.get('waterLogs',{});
+  logs[td]=Math.max(0,(logs[td]||0)-1);S.set('waterLogs',logs);renderBody();
+});
+document.getElementById('poopPlus').addEventListener('click',()=>{
+  const td=today();const logs=S.get('poopLogs',{});
+  logs[td]=(logs[td]||0)+1;S.set('poopLogs',logs);renderBody();
+});
+document.getElementById('poopMinus').addEventListener('click',()=>{
+  const td=today();const logs=S.get('poopLogs',{});
+  logs[td]=Math.max(0,(logs[td]||0)-1);S.set('poopLogs',logs);renderBody();
+});
 
-  // ===== 日历任务 =====
-  function getWeekDates() {
-    const now = new Date();
-    const day = now.getDay();
-    const diff = now.getDate() - day + (day === 0 ? -6 : 1);
-    const monday = new Date(now);
-    monday.setDate(diff);
-    monday.setHours(0,0,0,0);
-    const dates = [];
-    for (let i = 0; i < 7; i++) {
-      const d = new Date(monday);
-      d.setDate(monday.getDate() + i);
-      dates.push(d);
-    }
-    return dates;
-  }
+function renderBodyHistory(){
+  const c=document.getElementById('bodyHistoryContent');
+  const waterLogs=S.get('waterLogs',{});
+  const poopLogs=S.get('poopLogs',{});
+  const wd=weekDays();
+  let maxW=0,maxP=0;
+  wd.forEach(d=>{maxW=Math.max(maxW,waterLogs[d]||0);maxP=Math.max(maxP,poopLogs[d]||0)});
 
-  function getWeekKey() {
-    return getWeekDates()[0].toDateString();
-  }
+  c.innerHTML=`
+    <table class="history-table">
+      <tr><th>日期</th><th>💧 喝水(L)</th><th>💩 拉粑(次)</th></tr>
+      ${wd.map(d=>`<tr>
+        <td style="font-weight:600">${fmtDate(d)} ${dayLabel(d)}</td>
+        <td>${'█'.repeat(waterLogs[d]||0)}${waterLogs[d]||0}L</td>
+        <td>${'●'.repeat(poopLogs[d]||0)}${poopLogs[d]||0}次</td>
+      </tr>`).join('')}
+    </table>
+  `;
+}
 
-  function getCurrentWeekTasks() {
-    const weekKey = getWeekKey();
-    if (!data.weekTasks) data.weekTasks = {};
-    if (!data.weekTasks[weekKey]) data.weekTasks[weekKey] = [];
-    return data.weekTasks[weekKey];
-  }
+/* ============ SPLASH ============ */
+const splash=document.getElementById('splash');
+function hideSplash(){
+  if(!splash||splash.classList.contains('hide'))return;
+  splash.classList.add('hide');
+  setTimeout(()=>splash.remove(),700);
+}
+splash.addEventListener('click',hideSplash);
+setTimeout(hideSplash,2200);
 
-  function renderCalendar() {
-    const dates = getWeekDates();
-    const today = new Date();
-    const grid = document.getElementById('calendarGrid');
-    const tasks = getCurrentWeekTasks();
-
-    grid.innerHTML = dates.map((date, idx) => {
-      const isToday = date.toDateString() === today.toDateString();
-      const dayTasks = tasks.filter(t => t.dayIndex === idx);
-      return `
-        <div class="calendar-day ${isToday ? 'today' : ''}" onclick="showDayTasks(${idx})">
-          <div class="calendar-day-label">${DAY_SHORT[idx === 6 ? 0 : idx + 1]}</div>
-          <div class="calendar-day-num">${date.getDate()}</div>
-          <div class="calendar-tasks">
-            ${dayTasks.slice(0, 2).map(t => `
-              <div class="cal-task ${t.type} ${t.completed ? 'completed' : ''}">${t.title}</div>
-            `).join('')}
-            ${dayTasks.length > 2 ? `<div class="cal-task" style="font-size:9px;color:#6B6B6B;">+${dayTasks.length - 2}</div>` : ''}
-          </div>
-        </div>
-      `;
-    }).join('');
-  }
-
-  function addCalendarTask() {
-    const daySelect = document.getElementById('taskDay');
-    const typeSelect = document.getElementById('taskType');
-    const titleInput = document.getElementById('taskTitle');
-    const dayIndex = parseInt(daySelect.value);
-    const type = typeSelect.value;
-    const title = titleInput.value.trim();
-    if (!title) { showToast('⚠️ 请填写标题'); return; }
-
-    const tasks = getCurrentWeekTasks();
-    tasks.push({ id: Date.now(), dayIndex: dayIndex === 0 ? 6 : dayIndex - 1, type, title, completed: false });
-    saveData(data);
-    titleInput.value = '';
-    renderCalendar();
-    showToast('✅ 任务已添加');
-  }
-
-  function showDayTasks(dayIndex) {
-    const tasks = getCurrentWeekTasks().filter(t => t.dayIndex === dayIndex);
-    const modal = document.getElementById('taskModal');
-    const title = document.getElementById('modalTitle');
-    const content = document.getElementById('modalContent');
-    const dates = getWeekDates();
-    const dateStr = dates[dayIndex].toLocaleDateString('zh-CN', { month: 'short', day: 'numeric' });
-    title.textContent = `${DAY_NAMES[dayIndex === 6 ? 0 : dayIndex + 1]} (${dateStr})`;
-
-    if (tasks.length === 0) {
-      content.innerHTML = '<div style="color:#6B6B6B;text-align:center;padding:24px;">暂无任务</div>';
-    } else {
-      content.innerHTML = tasks.map(t => `
-        <div class="modal-task-item">
-          <div class="modal-task-info">
-            <span class="modal-task-type ${t.type}">${t.type === 'manual' ? '手工更新' : 'IP更新'}</span>
-            <span class="modal-task-title">${t.title}</span>
-          </div>
-          <div style="display:flex;gap:10px;align-items:center;">
-            <div class="checkbox ${t.completed ? 'checked' : ''}" onclick="toggleCalendarTask(${t.id})">${t.completed ? '✓' : ''}</div>
-            <button class="btn btn-danger btn-small" onclick="deleteCalendarTask(${t.id})">删除</button>
-          </div>
-        </div>
-      `).join('');
-    }
-    modal.classList.add('show');
-  }
-
-  function toggleCalendarTask(id) {
-    const tasks = getCurrentWeekTasks();
-    const task = tasks.find(t => t.id === id);
-    if (task) {
-      task.completed = !task.completed;
-      saveData(data);
-      renderCalendar();
-      showDayTasks(task.dayIndex);
-      showToast(task.completed ? '✅ 已完成' : '📝 已重置');
-    }
-  }
-
-  function deleteCalendarTask(id) {
-    const tasks = getCurrentWeekTasks();
-    const task = tasks.find(t => t.id === id);
-    const dayIndex = task ? task.dayIndex : 0;
-    data.weekTasks[getWeekKey()] = tasks.filter(t => t.id !== id);
-    saveData(data);
-    renderCalendar();
-    showDayTasks(dayIndex);
-    showToast('🗑️ 已删除');
-  }
-
-  function closeModal(e) {
-    if (!e || e.target.id === 'taskModal') {
-      document.getElementById('taskModal').classList.remove('show');
-    }
-  }
-
-  // ===== 健康部分 =====
-  function formatTime(dateStr) {
-    if (!dateStr) return '';
-    return new Date(dateStr).toLocaleTimeString('zh-CN', { hour: '2-digit', minute: '2-digit' });
-  }
-
-  function formatDate(dateStr) {
-    if (!dateStr) return '';
-    const d = new Date(dateStr);
-    const today = new Date().toDateString();
-    const yesterday = new Date(); yesterday.setDate(yesterday.getDate() - 1);
-    if (d.toDateString() === today) return '今天';
-    if (d.toDateString() === yesterday.toDateString()) return '昨天';
-    return d.toLocaleDateString('zh-CN', { month: 'short', day: 'numeric' });
-  }
-
-  function renderHealth() {
-    const grid = document.getElementById('healthGrid');
-    const milk = data.health.noMilk;
-    const poop = data.health.poop;
-    const water = data.health.water;
-
-    grid.innerHTML = `
-      <div class="health-card ${milk.completed ? 'completed' : ''}">
-        <div class="health-left">
-          <div class="health-emoji">🥛</div>
-          <div class="health-info">
-            <div class="health-name">戒牛奶</div>
-            <div class="health-time">${milk.completed ? '今日已打卡' : '未打卡'}</div>
-          </div>
-        </div>
-        <div class="health-toggle ${milk.completed ? 'on' : ''}" onclick="toggleMilk()"></div>
-      </div>
-
-      <div class="health-card ${poop.count > 0 ? 'completed' : ''}">
-        <div class="health-left">
-          <div class="health-emoji">💩</div>
-          <div class="health-info">
-            <div class="health-name">拉粑粑</div>
-            <div class="health-count">今日 ${poop.count} 次</div>
-          </div>
-        </div>
-        <button class="health-btn" onclick="addPoop()">+ 记录</button>
-      </div>
-
-      <div class="health-card ${water.liters > 0 ? 'completed' : ''}">
-        <div class="health-left">
-          <div class="health-emoji">💧</div>
-          <div class="health-info">
-            <div class="health-name">喝水</div>
-            <div class="health-time">${water.liters.toFixed(1)}L 今日</div>
-          </div>
-        </div>
-        <div class="water-control">
-          <button class="water-btn" onclick="changeWater(-0.5)">−</button>
-          <div class="water-value">${water.liters.toFixed(1)}L</div>
-          <button class="water-btn" onclick="changeWater(0.5)">+</button>
-        </div>
-      </div>
-    `;
-    renderHealthHistory();
-  }
-
-  function toggleMilk() {
-    const h = data.health.noMilk;
-    h.completed = !h.completed;
-    saveData(data);
-    renderHealth();
-    showToast(h.completed ? '🥛 戒牛奶打卡成功' : '🥛 已取消');
-  }
-
-  function addPoop() {
-    const h = data.health.poop;
-    const now = new Date().toISOString();
-    h.count = (h.count || 0) + 1;
-    h.history.push({ time: now, id: Date.now() });
-    saveData(data);
-    renderHealth();
-    showToast(`💩 记录成功！今日第 ${h.count} 次`);
-  }
-
-  function deletePoopRecord(recordId) {
-    const h = data.health.poop;
-    const record = h.history.find(r => r.id === recordId);
-    if (record) {
-      h.count = Math.max(0, h.count - 1);
-      h.history = h.history.filter(r => r.id !== recordId);
-      saveData(data);
-      renderHealth();
-      showToast('🗑️ 记录已删除');
-    }
-  }
-
-  function changeWater(delta) {
-    const h = data.health.water;
-    const newLiters = Math.max(0, (h.liters || 0) + delta);
-
-    if (delta > 0) {
-      const now = new Date().toISOString();
-      h.history.push({ time: now, amount: delta, id: Date.now() });
-      showToast(`💧 喝水 +${delta}L，今日共 ${newLiters.toFixed(1)}L`);
-    } else {
-      showToast(`💧 已减去 ${Math.abs(delta)}L，今日共 ${newLiters.toFixed(1)}L`);
-    }
-
-    h.liters = newLiters;
-    saveData(data);
-    renderHealth();
-  }
-
-  function deleteWaterRecord(recordId) {
-    const h = data.health.water;
-    const record = h.history.find(r => r.id === recordId);
-    if (record) {
-      h.liters = Math.max(0, (h.liters || 0) - record.amount);
-      h.history = h.history.filter(r => r.id !== recordId);
-      saveData(data);
-      renderHealth();
-      showToast('🗑️ 喝水记录已删除');
-    }
-  }
-
-  function renderHealthHistory() {
-    const container = document.getElementById('healthHistory');
-    const today = new Date().toDateString();
-    const todayRecords = [];
-
-    // 戒牛奶
-    if (data.health.noMilk.completed) {
-      todayRecords.push({ type: '戒牛奶', time: '今日已打卡', emoji: '🥛', id: null });
-    }
-
-    // 拉粑粑
-    data.health.poop.history.forEach(r => {
-      if (new Date(r.time).toDateString() === today) {
-        todayRecords.push({ type: '拉粑粑', time: formatTime(r.time), emoji: '💩', id: r.id, deletable: true, itemType: 'poop' });
-      }
-    });
-
-    // 喝水
-    data.health.water.history.forEach(r => {
-      if (new Date(r.time).toDateString() === today) {
-        todayRecords.push({ type: '喝水', time: formatTime(r.time), emoji: '💧', extra: `+${r.amount}L`, id: r.id, deletable: true, itemType: 'water' });
-      }
-    });
-
-    todayRecords.sort((a, b) => {
-      const ta = a.time === '今日已打卡' ? '00:00' : a.time;
-      const tb = b.time === '今日已打卡' ? '00:00' : b.time;
-      return ta.localeCompare(tb);
-    });
-
-    if (todayRecords.length === 0) {
-      container.innerHTML = '';
-      return;
-    }
-
-    container.innerHTML = `
-      <div class="history-title">📅 今日记录</div>
-      <div class="history-list">
-        ${todayRecords.map(r => `
-          <div class="history-item">
-            <div class="history-item-left">
-              <span class="history-item-emoji">${r.emoji}</span>
-              <span class="history-item-text">${r.type}${r.extra ? ' ' + r.extra : ''}<span class="history-item-time">${r.time}</span></span>
-            </div>
-            ${r.deletable ? `<button class="history-delete" onclick="${r.itemType === 'poop' ? 'deletePoopRecord' : 'deleteWaterRecord'}(${r.id})">×</button>` : ''}
-          </div>
-        `).join('')}
-      </div>
-    `;
-  }
-
-  // ===== 攀岩部分 =====
-  function getLevelClass(level) {
-    const l = level.toLowerCase();
-    if (l.includes('v1')) return 'level-v1';
-    if (l.includes('v2')) return 'level-v2';
-    if (l.includes('v3')) return 'level-v3';
-    if (l.includes('v4')) return 'level-v4';
-    if (l.includes('v5')) return 'level-v5';
-    return 'level-other';
-  }
-
-  function renderClimbs() {
-    const list = document.getElementById('climbList');
-    const stats = document.getElementById('climbStats');
-    if (data.climbs.length === 0) {
-      list.innerHTML = '<div class="empty-state">🧗 还没有记录，快去攀岩吧！</div>';
-      stats.innerHTML = '';
-      return;
-    }
-    const recent = data.climbs.slice(-10).reverse();
-    list.innerHTML = recent.map((climb, idx) => `
-      <div class="climb-item">
-        <div class="climb-info">
-          <span class="climb-level ${getLevelClass(climb.level)}">${climb.level}</span>
-          <span class="climb-date">${climb.date}</span>
-        </div>
-        <button class="climb-delete" onclick="deleteClimb(${data.climbs.length - 1 - idx})">×</button>
-      </div>
-    `).join('');
-
-    const thisWeek = getWeekClimbs();
-    stats.innerHTML = `
-      <div class="stat-box"><div class="stat-value">${thisWeek}</div><div class="stat-label">本周次数</div></div>
-      <div class="stat-box"><div class="stat-value">${data.climbs.length}</div><div class="stat-label">总记录数</div></div>
-    `;
-  }
-
-  function getWeekClimbs() {
-    const now = new Date();
-    const weekStart = new Date(now);
-    weekStart.setDate(now.getDate() - now.getDay());
-    weekStart.setHours(0, 0, 0, 0);
-    return data.climbs.filter(c => new Date(c.date) >= weekStart).length;
-  }
-
-  function addClimb() {
-    const input = document.getElementById('climbInput');
-    const level = input.value.trim();
-    if (!level) { showToast('⚠️ 请输入线路难度'); return; }
-    const now = new Date();
-    data.climbs.push({ level: level.toUpperCase(), date: now.toLocaleDateString('zh-CN'), timestamp: now.getTime() });
-    saveData(data);
-    input.value = '';
-    renderClimbs();
-    showToast('🧗 攀岩记录添加成功！');
-  }
-
-  function deleteClimb(index) {
-    data.climbs.splice(index, 1);
-    saveData(data);
-    renderClimbs();
-    showToast('🗑️ 记录已删除');
-  }
-
-  document.getElementById('taskTitle')?.addEventListener('keypress', e => { if (e.key === 'Enter') addCalendarTask(); });
-  document.getElementById('climbInput')?.addEventListener('keypress', e => { if (e.key === 'Enter') addClimb(); });
-
-  updateDate();
-  renderCalendar();
-  renderHealth();
-  renderClimbs();
+/* ============ INIT ============ */
+renderTasks();
+renderMilk();
+renderBody();
 </script>
-
 </body>
 </html>
