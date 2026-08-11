@@ -181,26 +181,31 @@ body{
 /* Splash screen */
 .splash{
   position:fixed;inset:0;z-index:999;
-  background:url('朦胧黄昏胶片.jpg') center/cover no-repeat;
+  background:linear-gradient(135deg,#FFD54F 0%,#F5B800 100%);
   display:flex;align-items:center;justify-content:center;
   transition:opacity .6s ease;cursor:pointer
 }
 .splash.hide{opacity:0;pointer-events:none}
-.splash::before{ /* 胶片颗粒 */
-  content:'';position:absolute;inset:0;pointer-events:none;opacity:.32;
-  background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/><feColorMatrix type='saturate' values='0'/></filter><rect width='160' height='160' filter='url(%23n)'/></svg>")
-}
-.splash::after{ /* 漏光 + 暗角 */
-  content:'';position:absolute;inset:0;pointer-events:none;
-  background:
-    radial-gradient(120% 80% at 82% 8%, rgba(255,160,90,.4), transparent 55%),
-    radial-gradient(100% 70% at 8% 92%, rgba(255,100,70,.28), transparent 55%),
-    linear-gradient(180deg, rgba(28,14,8,.28), transparent 45%, rgba(28,14,8,.4))
-}
+.yarn-ball{width:52px;height:52px;display:block;margin:0 auto 16px}
+.yarn-bob{animation:yarnBob 2.4s ease-in-out infinite;transform-box:fill-box;transform-origin:center}
+.yarn-core{animation:yarnSpin 3s linear infinite;transform-box:fill-box;transform-origin:center}
+.yarn-shadow{animation:yarnShadow 2.4s ease-in-out infinite;transform-box:fill-box;transform-origin:center}
 .splash-text{
   color:#FFFDF7;font-family:'ChosunilboNM','Chosunilbo NM',sans-serif;
   font-size:1.9rem;font-weight:400;letter-spacing:.3em;text-indent:.3em;
   position:relative;z-index:2
+}
+@keyframes yarnBob{
+  0%,100%{transform:translateY(0)}
+  50%{transform:translateY(-7px)}
+}
+@keyframes yarnSpin{
+  from{transform:rotate(0)}
+  to{transform:rotate(360deg)}
+}
+@keyframes yarnShadow{
+  0%,100%{transform:scaleX(1);opacity:.22}
+  50%{transform:scaleX(.8);opacity:.12}
 }
 </style>
 </head>
@@ -208,7 +213,30 @@ body{
 
 <!-- Splash screen -->
 <div class="splash" id="splash">
-  <div class="splash-text">祝你好好生活</div>
+  <div>
+    <svg class="yarn-ball" viewBox="0 0 64 64" aria-hidden="true">
+      <defs>
+        <filter id="mohair" x="-40%" y="-40%" width="180%" height="180%">
+          <feTurbulence type="fractalNoise" baseFrequency="0.85" numOctaves="2" seed="7" result="n"/>
+          <feDisplacementMap in="SourceGraphic" in2="n" scale="2.6"/>
+        </filter>
+      </defs>
+      <ellipse class="yarn-shadow" cx="32" cy="57" rx="17" ry="3.2" fill="#6B4F2A" opacity=".22"/>
+      <g class="yarn-bob">
+        <g class="yarn-core" filter="url(#mohair)">
+          <circle cx="32" cy="33" r="19" fill="#D49400"/>
+          <path d="M16 25 Q32 17 48 25 M14 33 Q32 43 50 33 M18 43 Q32 49 46 43 M22 21 Q32 29 42 21" stroke="#6B4F2A" stroke-width="1.8" fill="none" opacity=".75"/>
+          <path d="M20 21 Q26 16 32 18" stroke="#FFD54F" stroke-width="2.1" fill="none" stroke-linecap="round" opacity=".85"/>
+        </g>
+        <g stroke="#D49400" stroke-width="1" stroke-linecap="round" opacity=".95">
+          <path d="M12.5 27 l-4.5 -1.2 M12.5 33 l-5.5 0 M13.5 39 l-4.5 2 M51.5 27 l4.5 -1.2 M51.5 33 l5.5 0 M50.5 39 l4.5 2 M20 14.5 l-1 -4.5 M32 13.5 l0 -5.5 M44 14.5 l1 -4.5 M20 52 l-1 4 M32 53 l0 5 M44 52 l1 4"/>
+        </g>
+        <path d="M32 15 Q26 4 12 6 Q4 8 6 15" stroke="#D49400" stroke-width="2.2" fill="none" stroke-linecap="round" opacity=".95"/>
+        <path d="M32 15 Q26 4 12 6 Q4 8 6 15" stroke="#6B4F2A" stroke-width=".9" fill="none" stroke-linecap="round" opacity=".5" transform="translate(.8,0)"/>
+      </g>
+    </svg>
+    <div class="splash-text">祝你好好生活</div>
+  </div>
 </div>
 
 <!-- Tabs -->
@@ -323,8 +351,9 @@ body{
 <script>
 /* ==================== STORAGE ==================== */
 const S = {
-  get(k,d){try{const v=localStorage.getItem('jinjin_'+k);return v?JSON.parse(v):d}catch(e){return d}},
-  set(k,v){localStorage.setItem('jinjin_'+k,JSON.stringify(v))}
+  mem:{},
+  get(k,d){try{const v=localStorage.getItem('jinjin_'+k);return v?JSON.parse(v):d}catch(e){return this.mem[k]!==undefined?this.mem[k]:d}},
+  set(k,v){this.mem[k]=v;try{localStorage.setItem('jinjin_'+k,JSON.stringify(v))}catch(e){}}
 };
 
 /* ==================== HELPERS ==================== */
