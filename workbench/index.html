@@ -6,34 +6,35 @@
 <title>津津工作台</title>
 <style>
 @font-face{
-  font-family:'ChosunilboNM';
-  src:url('ChosunilboNM.woff') format('woff');
+  font-family:'方正像素12';
+  src:url('方正像素12.TTF') format('truetype');
   font-display:swap;
 }
 :root {
-  --bg: #FFFDF7; --card: #FFFFFF; --tile: #FBF1DC;
-  --primary: #F5B800; --primary-light: #FFD54F; --primary-deep: #D49400;
-  --green: #7EC8A0; --orange: #FF8A65; --sky: #87CEEB;
-  --ink: #6B4F2A; --ink2: #8A8178; --ink3: #A99E8F;
-  --radius: 16px; --shadow: 0 4px 12px rgba(245,184,0,.08);
+  --bg: #F2EDE3; --card: #FBF8F1; --tile: #E9E2D3;
+  --primary: #B08D57; --primary-light: #E2D6BF; --primary-deep: #8A6D3F;
+  --border: #D6CDB9; --rose: #8A8174;
+  --green: #8FA98F; --orange: #B06050; --sky: #8FA3B8;
+  --ink: #3D3A34; --ink2: #6E675C; --ink3: #9C9488;
+  --radius: 16px; --shadow: 0 4px 14px rgba(61,58,52,.08);
 }
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 body{
-  font-family:-apple-system,'PingFang SC','Noto Sans SC','Helvetica Neue',sans-serif;
+  font-family:'方正像素12','FZXS12','PingFang SC',sans-serif;
   font-size:15px;line-height:1.6;color:var(--ink);
-  background:linear-gradient(180deg,#FFFDF7 0%,#F8E8C8 100%);max-width:480px;margin:0 auto;
-  min-height:100dvh;padding-bottom:40px;
+  background:linear-gradient(180deg,#F4F0E7 0%,#E8E0CD 100%);max-width:480px;margin:0 auto;
+  min-height:100dvh;padding-top:calc(env(safe-area-inset-top,0px) + 22px);padding-bottom:40px;
 }
 ::selection{background:var(--primary-light);color:var(--ink)}
 
 /* Tabs */
-.tabs{display:flex;position:sticky;top:0;z-index:10;background:var(--bg);padding:12px 12px 0;gap:6px}
+.tabs{display:flex;position:sticky;top:env(safe-area-inset-top,0px);z-index:10;background:var(--bg);padding:12px 12px 0;gap:6px}
 .tab{
   flex:1;text-align:center;padding:10px 4px;border-radius:12px 12px 0 0;
   font-size:.8rem;font-weight:600;color:var(--ink3);cursor:pointer;
   background:transparent;border:none;transition:.2s
 }
-.tab.active{color:var(--primary);background:var(--card);box-shadow:0 -2px 10px rgba(245,184,0,.16)}
+.tab.active{color:var(--primary);background:var(--card);box-shadow:0 -2px 10px rgba(61,58,52,.08)}
 .tab .emoji{display:block;font-size:1.2rem;margin-bottom:2px}
 
 /* Panels */
@@ -51,12 +52,13 @@ body{
   font-size:.7rem;font-weight:600;color:var(--ink2);cursor:pointer;
   position:relative;transition:.2s;border:2px solid transparent;min-height:56px
 }
-.cal-day.today{border-color:var(--primary);background:#FFF3D6}
-.cal-day .day-stars{display:flex;justify-content:center;gap:1px;margin-top:1px;line-height:1}
-.cal-day .day-stars i{font-style:normal;font-size:.55rem;color:var(--primary);-webkit-text-stroke:.4px #FFFDF7;display:inline-block;transform:rotate(-10deg)}
-.cal-day .day-stars i:nth-child(even){transform:rotate(10deg)}
-.cal-day .day-stars em{font-style:normal;font-size:.5rem;color:var(--primary-deep);font-weight:700}
-.cal-day .day-num{font-size:.85rem;margin-bottom:2px}
+.cal-day.today{border-color:var(--primary);background:#EFE7D5}
+.day-stars{position:absolute;inset:0;pointer-events:none;z-index:0}
+.day-stars i{position:absolute;width:12px;height:12px;font-style:normal;display:block;filter:drop-shadow(0 1.5px 1.5px rgba(61,58,52,.35))}
+.day-stars i svg{width:100%;height:100%;display:block}
+.day-stars em{position:absolute;font-style:normal;font-size:.5rem;color:var(--primary-deep);font-weight:700}
+.cal-day .day-num{font-size:.85rem;margin-bottom:2px;position:relative;z-index:1}
+.cal-day .day-label{position:relative;z-index:1}
 .cal-day .day-label{font-size:.6rem;color:var(--ink3)}
 
 /* Day detail */
@@ -70,32 +72,32 @@ body{
 .task-item .badge{
   font-size:.65rem;font-weight:600;padding:3px 8px;border-radius:20px;white-space:nowrap
 }
-.badge-media{background:rgba(245,184,0,.14);color:var(--primary-deep)}
-.badge-daily{background:rgba(135,206,235,.2);color:#3E93B8}
-.badge-custom{background:rgba(255,138,101,.15);color:#E06A44}
+.badge-media{background:rgba(176,141,87,.16);color:#8A6D3F}
+.badge-daily{background:rgba(143,163,184,.2);color:#5F7589}
+.badge-custom{background:rgba(176,96,80,.12);color:#A05545}
 .task-item .task-title{flex:1;font-size:.85rem}
 .task-item .del-btn{font-size:.75rem;color:var(--ink3);cursor:pointer;border:none;background:none;padding:4px}
 
 /* Add task form */
 .add-form{display:flex;flex-direction:column;gap:8px;margin-bottom:16px}
 .add-form select,.add-form input{
-  padding:10px 12px;border-radius:10px;border:1px solid #EAD9B4;
+  padding:10px 12px;border-radius:10px;border:1px solid #D6CDB9;
   font-size:.85rem;background:var(--bg);width:100%
 }
 .add-form .row{display:flex;gap:8px}
 .add-form .save-btn{
-  padding:10px;border-radius:10px;background:var(--primary);color:#FFFDF7;
+  padding:10px;border-radius:10px;background:var(--primary);color:#FBF8F1;
   border:none;font-size:.85rem;font-weight:600;cursor:pointer
 }
 
 /* Milk counter */
 .big-counter{text-align:center;padding:24px 0}
-.big-counter .count{font-size:3.5rem;font-weight:900;line-height:1;font-family:'Montserrat','Poppins','Georgia',serif}
+.big-counter .count{font-size:3.5rem;font-weight:400;line-height:1;font-family:'方正像素12','FZXS12','PingFang SC',sans-serif}
 .big-counter .count.cheat{color:var(--primary-deep)}
 .big-counter .label{font-size:.85rem;color:var(--ink3);margin-top:6px}
 .big-counter .cheat-badge{
   display:inline-block;padding:6px 16px;border-radius:20px;
-  background:var(--primary);color:#FFFDF7;font-weight:700;font-size:.85rem;margin-top:8px
+  background:var(--primary);color:#FBF8F1;font-weight:700;font-size:.85rem;margin-top:8px
 }
 
 .toggle-row{display:flex;align-items:center;justify-content:space-between;padding:16px;background:var(--tile);border-radius:12px;margin-bottom:16px}
@@ -104,7 +106,7 @@ body{
 .switch input{opacity:0;width:0;height:0}
 .switch .slider{
   position:absolute;cursor:pointer;top:0;left:0;right:0;bottom:0;
-  background:#E6D7B4;border-radius:30px;transition:.3s
+  background:#D8D0BE;border-radius:30px;transition:.3s
 }
 .switch .slider::before{
   content:'';position:absolute;height:24px;width:24px;left:3px;bottom:3px;
@@ -119,10 +121,10 @@ body{
 .photo-card{
   flex:1;background:var(--tile);border-radius:12px;
   display:flex;flex-direction:column;align-items:center;padding:16px 8px;
-  gap:8px;cursor:pointer;border:2px dashed #E5CF9E;transition:.2s;min-height:100px;justify-content:center
+  gap:8px;cursor:pointer;border:2px dashed #C9BFAA;transition:.2s;min-height:100px;justify-content:center
 }
 .photo-card.has-photo{border-style:solid;border-color:var(--green)}
-.photo-card img{width:100%;border-radius:8px;object-fit:cover;max-height:160px}
+.photo-card img.photo{width:100%;border-radius:8px;object-fit:cover;max-height:160px}
 .photo-card .label{font-size:.75rem;color:var(--ink3);font-weight:500}
 .photo-card .icon{font-size:1.5rem}
 
@@ -133,21 +135,21 @@ body{
   padding:20px 16px;text-align:center
 }
 .counter-box .emoji{font-size:1.5rem;margin-bottom:4px}
-.counter-box .num{font-size:2.2rem;font-weight:900;line-height:1;font-family:'Montserrat','Poppins','Georgia',serif}
+.counter-box .num{font-size:2.2rem;font-weight:400;line-height:1;font-family:'方正像素12','FZXS12','PingFang SC',sans-serif}
 .counter-box .unit{font-size:.75rem;color:var(--ink3)}
 .counter-box .btn-group{display:flex;gap:8px;justify-content:center;margin-top:12px}
 .btn-round{
   width:40px;height:40px;border-radius:50%;border:none;
   font-size:1.2rem;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center
 }
-.btn-plus{background:var(--primary);color:#FFFDF7}
-.btn-minus{background:#EAD9B4;color:var(--ink2)}
+.btn-plus{background:var(--primary);color:#FBF8F1}
+.btn-minus{background:#E2DAC6;color:var(--ink2)}
 
 /* Collapse */
 .collapse{margin-top:16px}
 .collapse-header{
   display:flex;align-items:center;justify-content:space-between;
-  padding:12px 0;cursor:pointer;border-top:1px solid #F0E1C0;font-weight:600;font-size:.9rem
+  padding:12px 0;cursor:pointer;border-top:1px solid #DCD3BF;font-weight:600;font-size:.9rem
 }
 .collapse-header .arrow{transition:.25s;font-size:.75rem}
 .collapse.open .arrow{transform:rotate(180deg)}
@@ -160,8 +162,8 @@ body{
   text-align:center;padding:8px 2px;border-radius:8px;background:var(--bg);font-size:.65rem
 }
 .summary-day .s-num{font-size:.9rem;font-weight:700;display:block}
-.summary-day.done{background:rgba(126,200,160,.16);color:#4F9C6F}
-.summary-day.missed{background:rgba(255,138,101,.14);color:#E06A44}
+.summary-day.done{background:rgba(143,169,143,.2);color:#5F7F5F}
+.summary-day.missed{background:rgba(176,96,80,.12);color:#A05545}
 
 .photo-compare{display:flex;overflow-x:auto;gap:8px;padding-bottom:8px}
 .photo-compare .compare-card{
@@ -172,71 +174,90 @@ body{
 
 .history-table{width:100%;font-size:.8rem}
 .history-table td,.history-table th{padding:8px 4px;text-align:center}
-.history-table th{color:var(--ink3);font-weight:500;border-bottom:2px solid #F0E1C0}
-.history-table td{border-bottom:1px solid #F7EEDC}
+.history-table th{color:var(--ink3);font-weight:500;border-bottom:2px solid #DCD3BF}
+.history-table td{border-bottom:1px solid #EBE4D2}
 
 
 .empty{text-align:center;color:var(--ink3);font-size:.8rem;padding:12px 0}
 
+/* Sport calendar */
+.month-nav{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
+.month-nav .nav-btn{background:none;border:none;font-size:1.2rem;color:var(--primary-deep);cursor:pointer;padding:4px 14px}
+.month-nav .month-title{font-weight:700;font-size:.95rem}
+.sport-cal{display:grid;grid-template-columns:repeat(7,1fr);gap:4px;margin-bottom:12px}
+.sport-cal .wk{font-size:.6rem;color:var(--ink3);text-align:center;padding:4px 0}
+.sport-day{
+  aspect-ratio:1;border-radius:10px;background:var(--tile);
+  display:flex;align-items:center;justify-content:center;
+  font-size:.8rem;font-weight:600;color:var(--ink2);cursor:pointer;
+  border:2px solid transparent;position:relative
+}
+.sport-day .day-num{position:relative;z-index:1}
+.sport-day.empty{background:transparent;cursor:default}
+.sport-day.selected{border-color:var(--primary);background:#EFE7D5}
+.sport-day.today{border-color:var(--primary-deep)}
+.sport-form{display:flex;flex-direction:column;gap:8px;margin:12px 0}
+.sport-form select,.sport-form input{
+  padding:10px 12px;border-radius:10px;border:1px solid #D6CDB9;
+  font-size:.85rem;background:var(--bg);width:100%
+}
+.route-row{display:flex;gap:8px;align-items:center}
+.chip-row{display:flex;flex-wrap:wrap;gap:6px}
+.chip{
+  background:rgba(176,141,87,.16);color:#8A6D3F;font-size:.7rem;
+  padding:5px 10px;border-radius:20px;display:flex;align-items:center;gap:6px
+}
+.chip .x{cursor:pointer;font-weight:700}
+.day-hint{font-size:.7rem;color:var(--ink3)}
+
+/* Sport photo */
+.sport-photo-row{display:flex;align-items:center;gap:8px}
+.sport-photo-label{
+  font-size:.75rem;color:var(--ink2);cursor:pointer;
+  border:1.5px dashed #C9BFAA;border-radius:10px;padding:8px 12px;
+  background:var(--bg);flex:1;text-align:center
+}
+.sport-thumb{width:44px;height:44px;border-radius:8px;object-fit:cover;cursor:zoom-in;flex:0 0 auto;border:1px solid var(--border)}
+
+/* Lightbox */
+.lightbox{
+  position:fixed;inset:0;z-index:1000;background:rgba(20,18,14,.92);
+  display:none;align-items:center;justify-content:center;cursor:zoom-out
+}
+.lightbox img{max-width:92vw;max-height:88vh;border-radius:10px}
+
+/* Period summary */
+.period-title{font-weight:700;font-size:.85rem;margin:12px 0 6px;color:var(--ink2)}
+.period-title:first-child{margin-top:0}
+.period-grid{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:8px}
+.period-stat{
+  background:var(--tile);border-radius:10px;padding:8px 10px;
+  text-align:center;font-size:.7rem;color:var(--ink2);flex:1;min-width:64px
+}
+.period-stat b{display:block;font-size:1.05rem;color:var(--ink);font-weight:700}
+
 /* Splash screen */
 .splash{
   position:fixed;inset:0;z-index:999;
-  background:linear-gradient(135deg,#FFD54F 0%,#F5B800 100%);
+  background:linear-gradient(160deg,#3A362E 0%,#5A5240 100%);
   display:flex;align-items:center;justify-content:center;
   transition:opacity .6s ease;cursor:pointer
 }
 .splash.hide{opacity:0;pointer-events:none}
-.yarn-ball{width:52px;height:52px;display:block;margin:0 auto 16px}
-.yarn-bob{animation:yarnBob 2.4s ease-in-out infinite;transform-box:fill-box;transform-origin:center}
-.yarn-core{animation:yarnSpin 3s linear infinite;transform-box:fill-box;transform-origin:center}
-.yarn-shadow{animation:yarnShadow 2.4s ease-in-out infinite;transform-box:fill-box;transform-origin:center}
-.splash-text{
-  color:#FFFDF7;font-family:'ChosunilboNM','Chosunilbo NM',sans-serif;
-  font-size:1.9rem;font-weight:400;letter-spacing:.3em;text-indent:.3em;
-  position:relative;z-index:2
+.type-line{
+  font-family:'方正像素12','FZXS12','PingFang SC',monospace;
+  font-size:1.35rem;font-weight:400;color:#F2EDE3;
+  letter-spacing:.06em;white-space:pre
 }
-@keyframes yarnBob{
-  0%,100%{transform:translateY(0)}
-  50%{transform:translateY(-7px)}
-}
-@keyframes yarnSpin{
-  from{transform:rotate(0)}
-  to{transform:rotate(360deg)}
-}
-@keyframes yarnShadow{
-  0%,100%{transform:scaleX(1);opacity:.22}
-  50%{transform:scaleX(.8);opacity:.12}
-}
+.caret{display:inline-block;width:.52em;height:1em;background:#F2EDE3;vertical-align:-.12em;margin-left:2px;animation:caretBlink .9s steps(1) infinite}
+@keyframes caretBlink{50%{opacity:0}}
 </style>
 </head>
 <body>
 
 <!-- Splash screen -->
 <div class="splash" id="splash">
-  <div>
-    <svg class="yarn-ball" viewBox="0 0 64 64" aria-hidden="true">
-      <defs>
-        <filter id="mohair" x="-40%" y="-40%" width="180%" height="180%">
-          <feTurbulence type="fractalNoise" baseFrequency="0.85" numOctaves="2" seed="7" result="n"/>
-          <feDisplacementMap in="SourceGraphic" in2="n" scale="2.6"/>
-        </filter>
-      </defs>
-      <ellipse class="yarn-shadow" cx="32" cy="57" rx="17" ry="3.2" fill="#6B4F2A" opacity=".22"/>
-      <g class="yarn-bob">
-        <g class="yarn-core" filter="url(#mohair)">
-          <circle cx="32" cy="33" r="19" fill="#D49400"/>
-          <path d="M16 25 Q32 17 48 25 M14 33 Q32 43 50 33 M18 43 Q32 49 46 43 M22 21 Q32 29 42 21" stroke="#6B4F2A" stroke-width="1.8" fill="none" opacity=".75"/>
-          <path d="M20 21 Q26 16 32 18" stroke="#FFD54F" stroke-width="2.1" fill="none" stroke-linecap="round" opacity=".85"/>
-        </g>
-        <g stroke="#D49400" stroke-width="1" stroke-linecap="round" opacity=".95">
-          <path d="M12.5 27 l-4.5 -1.2 M12.5 33 l-5.5 0 M13.5 39 l-4.5 2 M51.5 27 l4.5 -1.2 M51.5 33 l5.5 0 M50.5 39 l4.5 2 M20 14.5 l-1 -4.5 M32 13.5 l0 -5.5 M44 14.5 l1 -4.5 M20 52 l-1 4 M32 53 l0 5 M44 52 l1 4"/>
-        </g>
-        <path d="M32 15 Q26 4 12 6 Q4 8 6 15" stroke="#D49400" stroke-width="2.2" fill="none" stroke-linecap="round" opacity=".95"/>
-        <path d="M32 15 Q26 4 12 6 Q4 8 6 15" stroke="#6B4F2A" stroke-width=".9" fill="none" stroke-linecap="round" opacity=".5" transform="translate(.8,0)"/>
-      </g>
-    </svg>
-    <div class="splash-text">祝你好好生活</div>
-  </div>
+  <div class="type-line"><span id="typeOut"></span><span class="caret"></span></div>
 </div>
 
 <!-- Tabs -->
@@ -244,6 +265,7 @@ body{
   <button class="tab active" data-tab="tasks"><span class="emoji">📋</span>每周任务</button>
   <button class="tab" data-tab="milk"><span class="emoji">🥛</span>戒牛奶</button>
   <button class="tab" data-tab="body"><span class="emoji">💩</span>拉粑喝水</button>
+  <button class="tab" data-tab="sport"><span class="emoji">🏃</span>动起来</button>
 </div>
 
 <!-- Panel 1: 每周任务 -->
@@ -262,21 +284,19 @@ body{
       <option value="__custom">自定义…</option>
     </select>
     <input type="text" id="customType" placeholder="输入自定义类型" style="display:none">
-    <div class="row">
-      <select id="taskDay">
-        <option value="周一">周一</option><option value="周二">周二</option>
-        <option value="周三">周三</option><option value="周四">周四</option>
-        <option value="周五">周五</option><option value="周六">周六</option>
-        <option value="周日">周日</option>
-      </select>
-      <input type="text" id="taskTitle" placeholder="更新内容标题…">
-    </div>
+    <div class="day-hint" id="taskDayHint"></div>
+    <input type="text" id="taskTitle" placeholder="更新内容标题…">
     <button class="save-btn" id="addTaskBtn">➕ 添加任务</button>
   </div>
 
   <div class="collapse" id="taskSummary">
     <div class="collapse-header"><span>📊 本周总结</span><span class="arrow">▼</span></div>
     <div class="collapse-body"><div id="taskSummaryContent"></div></div>
+  </div>
+
+  <div class="collapse" id="tasksPeriod">
+    <div class="collapse-header"><span>📊 月末总结</span><span class="arrow">▼</span></div>
+    <div class="collapse-body"><div id="tasksPeriodContent"></div></div>
   </div>
 </div>
 
@@ -302,18 +322,23 @@ body{
     <div class="photo-card" id="photoFace">
       <span class="icon">🧑</span>
       <span class="label">脸部照片</span>
-      <input type="file" accept="image/*" capture="user" style="display:none" id="faceInput">
+      <input type="file" accept="image/*" style="display:none" id="faceInput">
     </div>
     <div class="photo-card" id="photoLegs">
       <span class="icon">🦵</span>
       <span class="label">腿部照片</span>
-      <input type="file" accept="image/*" capture="environment" style="display:none" id="legsInput">
+      <input type="file" accept="image/*" style="display:none" id="legsInput">
     </div>
   </div>
 
   <div class="collapse" id="milkSummary">
     <div class="collapse-header"><span>📊 本周总结（7天照片对比）</span><span class="arrow">▼</span></div>
     <div class="collapse-body"><div id="milkSummaryContent"></div></div>
+  </div>
+
+  <div class="collapse" id="milkPeriod">
+    <div class="collapse-header"><span>📊 月末总结</span><span class="arrow">▼</span></div>
+    <div class="collapse-body"><div id="milkPeriodContent"></div></div>
   </div>
 </div>
 
@@ -346,7 +371,83 @@ body{
     <div class="collapse-header"><span>📅 历史记录（最近7天）</span><span class="arrow">▼</span></div>
     <div class="collapse-body"><div id="bodyHistoryContent"></div></div>
   </div>
+
+  <div class="collapse" id="bodyPeriod">
+    <div class="collapse-header"><span>📊 月末总结</span><span class="arrow">▼</span></div>
+    <div class="collapse-body"><div id="bodyPeriodContent"></div></div>
+  </div>
 </div>
+
+<!-- Panel 4: 运动 -->
+<div class="panel" id="panel-sport">
+  <div class="section-title"><span class="icon">🏃</span>动起来</div>
+
+  <div class="month-nav">
+    <button class="nav-btn" id="sportPrev">‹</button>
+    <span class="month-title" id="sportMonthTitle"></span>
+    <button class="nav-btn" id="sportNext">›</button>
+  </div>
+  <div class="sport-cal" id="sportCal"></div>
+
+  <div class="day-detail active">
+    <h4 id="sportDayTitle"></h4>
+    <div id="sportDayList"></div>
+  </div>
+
+  <div class="sport-form">
+    <select id="sportType">
+      <option value="攀岩">攀岩</option>
+      <option value="跑步">跑步</option>
+      <option value="游泳">游泳</option>
+      <option value="骑行">骑行</option>
+      <option value="力量训练">力量训练</option>
+      <option value="瑜伽">瑜伽</option>
+      <option value="球类">球类</option>
+      <option value="其他">其他</option>
+    </select>
+    <select id="sportDur">
+      <option value="0.5">0.5 小时</option>
+      <option value="1" selected>1 小时</option>
+      <option value="1.5">1.5 小时</option>
+      <option value="2">2 小时</option>
+      <option value="2.5">2.5 小时</option>
+      <option value="3">3 小时</option>
+      <option value="3.5">3.5 小时</option>
+      <option value="4">4 小时</option>
+      <option value="4.5">4.5 小时</option>
+      <option value="5">5 小时</option>
+    </select>
+    <div class="route-row" id="routeRow" style="display:none">
+      <select id="routeGrade">
+        <option value="V3">V3</option><option value="V4">V4</option>
+        <option value="V5">V5</option><option value="V6">V6</option>
+        <option value="V7">V7</option><option value="V8">V8</option>
+      </select>
+      <select id="routeCount">
+        <option value="1">1条</option><option value="2">2条</option><option value="3">3条</option>
+        <option value="4">4条</option><option value="5">5条</option><option value="6">6条</option>
+        <option value="7">7条</option><option value="8">8条</option><option value="9">9条</option>
+      </select>
+      <button class="save-btn" id="routeAddBtn" style="flex:0 0 auto">＋</button>
+    </div>
+    <div class="chip-row" id="routeChips"></div>
+    <input type="text" id="sportNote" placeholder="备注（可选）…">
+    <div class="sport-photo-row">
+      <input type="file" id="sportPhoto" accept="image/*" style="display:none">
+      <label class="sport-photo-label" for="sportPhoto">📷 添加照片（可选）</label>
+      <img class="sport-thumb" id="sportPhotoPreview" style="display:none" alt="">
+    </div>
+    <button class="save-btn" id="sportAddBtn">➕ 添加运动记录</button>
+  </div>
+
+  <div class="collapse" id="sportPeriod">
+    <div class="collapse-header"><span>📊 月末总结</span><span class="arrow">▼</span></div>
+    <div class="collapse-body"><div id="sportPeriodContent"></div></div>
+  </div>
+</div>
+
+<!-- Lightbox -->
+<div class="lightbox" id="lightbox"><img id="lightboxImg" src="" alt=""></div>
 
 <script>
 /* ==================== STORAGE ==================== */
@@ -371,6 +472,94 @@ function weekDays(){
 function dayLabel(d){const dt=new Date(d+'T00:00');return['周日','周一','周二','周三','周四','周五','周六'][dt.getDay()]}
 function dayNum(d){return new Date(d+'T00:00').getDate()}
 function fmtDate(d){const dt=new Date(d+'T00:00');return `${dt.getMonth()+1}/${dt.getDate()}`}
+function compressImage(file,maxSide,quality,cb){
+  const reader=new FileReader();
+  reader.onload=function(){
+    const img=new Image();
+    img.onload=function(){
+      try{
+        let w=img.width,h=img.height;
+        if(Math.max(w,h)>maxSide){const r=maxSide/Math.max(w,h);w=Math.round(w*r);h=Math.round(h*r)}
+        const canvas=document.createElement('canvas');
+        canvas.width=w;canvas.height=h;
+        canvas.getContext('2d').drawImage(img,0,0,w,h);
+        let data=canvas.toDataURL('image/jpeg',quality);
+        if(data.length>800000)data=canvas.toDataURL('image/jpeg',0.5);
+        cb(data);
+      }catch(e){cb(null)}
+    };
+    img.onerror=function(){cb(null)};
+    img.src=reader.result;
+  };
+  reader.onerror=function(){cb(null)};
+  reader.readAsDataURL(file);
+}
+/* ---- period summary helpers ---- */
+function ymKey(d){return d.slice(0,7)}
+function qKey(d){return d.slice(0,4)+'-Q'+Math.ceil(+d.slice(5,7)/3)}
+function yKey(d){return d.slice(0,4)}
+function periodStat(label,val){return `<div class="period-stat"><b>${val}</b>${label}</div>`}
+function spanDays(dates){
+  if(!dates.length)return 0;
+  const min=Math.min(...dates.map(d=>+new Date(d)));
+  return Math.floor((Date.now()-min)/86400000);
+}
+/* list: items with dateStr; stat: (items)=>html string; returns full period html */
+function periodSummary(dates,stat){
+  const span=spanDays(dates);
+  const td=today();
+  const groups=[
+    ['📅 本月',ymKey(td),d=>ymKey(d)===ymKey(td)],
+    ['🗓 本季',qKey(td),d=>qKey(d)===qKey(td)],
+    ['🎆 本年',yKey(td),d=>yKey(d)===yKey(td)]
+  ];
+  let html='';
+  const show=[true,span>=90,span>=365];
+  groups.forEach((g,i)=>{
+    if(!show[i])return;
+    const items=dates.filter(g[2]);
+    html+=`<div class="period-title">${g[0]}（${g[1]}）</div><div class="period-grid">${stat(items)}</div>`;
+  });
+  return html;
+}
+const STICKERS={
+  '自媒体更新':['star','#8FA3B8'],
+  '日常事件':['circle','#8FA98F'],
+  '攀岩':['tri','#B06050'],
+  '跑步':['circle','#8FA98F'],
+  '游泳':['drop','#8FA3B8'],
+  '骑行':['diamond','#B08D57'],
+  '力量训练':['square','#8A8174'],
+  '瑜伽':['star','#A89BB0'],
+  '球类':['circle','#B06050'],
+  '其他':['star','#F0C860']
+};
+const STICKER_PATHS={
+  star:'M12 2.5l2.8 6 6.7.8-4.9 4.6 1.3 6.6L12 17.4l-5.9 3.1 1.3-6.6L2.5 9.3l6.7-.8z',
+  circle:'<circle cx="12" cy="12" r="8"/>',
+  diamond:'M12 3l9 9-9 9-9-9z',
+  tri:'M12 3.5L21 19H3z',
+  square:'<rect x="4.5" y="4.5" width="15" height="15" rx="2.5"/>',
+  drop:'M12 2.5C12 2.5 6.5 9.2 6.5 14a5.5 5.5 0 0 0 11 0c0-4.8-5.5-11.5-5.5-11.5z'
+};
+function stickerSVG(type){
+  const [shape,fill]=STICKERS[type]||['star','#F0C860'];
+  const body=shape==='circle'||shape==='square'?STICKER_PATHS[shape]:`<path d="${STICKER_PATHS[shape]}"/>`;
+  return `<svg viewBox="0 0 24 24"><g fill="${fill}" stroke="#8A6D3F" stroke-width="1">${body}</g></svg>`;
+}
+function stickerRow(types){
+  if(!types||!types.length)return '';
+  const n=Math.min(types.length,4);
+  let s='<span class="day-stars">';
+  for(let i=0;i<n;i++){
+    const top=Math.round(Math.random()*105-10);
+    const left=Math.round(Math.random()*105-10);
+    const rot=Math.round(Math.random()*50-25);
+    s+=`<i style="top:${top}%;left:${left}%;transform:rotate(${rot}deg)">${stickerSVG(types[i])}</i>`;
+  }
+  if(types.length>4)s+=`<em style="top:${Math.round(Math.random()*70+15)}%;left:${Math.round(Math.random()*70+15)}%">+${types.length-4}</em>`;
+  return s+'</span>';
+}
 
 /* ==================== TAB SWITCHING ==================== */
 document.querySelectorAll('.tab').forEach(t=>{t.addEventListener('click',()=>{
@@ -381,6 +570,7 @@ document.querySelectorAll('.tab').forEach(t=>{t.addEventListener('click',()=>{
   if(t.dataset.tab==='tasks')renderTasks();
   if(t.dataset.tab==='milk')renderMilk();
   if(t.dataset.tab==='body')renderBody();
+  if(t.dataset.tab==='sport')renderSport();
 })});
 
 /* ==================== COLLAPSE ==================== */
@@ -390,28 +580,41 @@ document.querySelectorAll('.collapse-header').forEach(h=>{
 
 /* ============ TASKS ============ */
 let tasks=S.get('tasks',[]);
-let selectedDay=null;
+let selectedDay=dayLabel(today());
+
+function taskPeriodStats(){
+  const c=document.getElementById('tasksPeriodContent');
+  if(!tasks.length){c.innerHTML='<div class="empty">暂无任务数据</div>';return}
+  const dates=tasks.map(t=>new Date(t.id).toISOString().slice(0,10));
+  c.innerHTML=periodSummary(dates,items=>{
+    if(!items.length)return '<div class="empty">本月暂无任务</div>';
+    const types=items.reduce((o,t)=>{o[t.type]=(o[t.type]||0)+1;return o},{});
+    return periodStat('任务总数',items.length)+Object.entries(types).map(([k,v])=>periodStat(k,v)).join('');
+  });
+}
 
 function renderTasks(){
   const cal=document.getElementById('taskCal');
   const days=weekDays();const td=today();
   cal.innerHTML=days.map((d,i)=>{
-    const cnt=tasks.filter(t=>t.day===dayLabel(d)).length;
+    const dayTypes=tasks.filter(t=>t.day===dayLabel(d)).map(t=>t.type);
     const cls=['cal-day',d===td?'today':''].filter(Boolean).join(' ');
-    const stars=cnt>0?`<span class="day-stars">${'<i>★</i>'.repeat(Math.min(cnt,4))}${cnt>4?`<em>+${cnt-4}</em>`:''}</span>`:'';
+    const stars=stickerRow(dayTypes);
     return `<div class="${cls}" data-day="${dayLabel(d)}" data-date="${d}">
       <span class="day-num">${dayNum(d)}</span><span class="day-label">${dayLabel(d)}</span>${stars}</div>`;
   }).join('');
 
   cal.querySelectorAll('.cal-day').forEach(el=>el.addEventListener('click',()=>{
     selectedDay=el.dataset.day;
+    document.getElementById('taskDayHint').textContent='添加到：'+selectedDay;
     showDayDetail(el.dataset.day);
     cal.querySelectorAll('.cal-day').forEach(x=>x.style.borderColor=x.classList.contains('today')?'var(--primary)':'transparent');
     el.style.borderColor='var(--orange)';
   }));
 
-  if(selectedDay)showDayDetail(selectedDay);
+  if(selectedDay){showDayDetail(selectedDay);document.getElementById('taskDayHint').textContent='添加到：'+selectedDay;}
   renderTaskSummary();
+  taskPeriodStats();
 }
 
 function showDayDetail(day){
@@ -441,7 +644,7 @@ document.getElementById('taskType').addEventListener('change',function(){
 document.getElementById('addTaskBtn').addEventListener('click',()=>{
   let type=document.getElementById('taskType').value;
   if(type==='__custom'){type=document.getElementById('customType').value.trim();if(!type)return}
-  const day=document.getElementById('taskDay').value;
+  const day=selectedDay;
   const title=document.getElementById('taskTitle').value.trim();
   tasks.push({id:Date.now(),type,day,title});
   S.set('tasks',tasks);
@@ -465,7 +668,7 @@ function renderTaskSummary(){
     <p style="font-weight:600;margin:16px 0 8px">📝 全部任务清单</p>
     ${tasks.length?tasks.map(t=>`<div style="font-size:.8rem;padding:4px 0;display:flex;gap:8px">
       <span style="color:var(--ink3);min-width:36px">${t.day}</span>
-      <span style="font-size:.65rem;padding:2px 6px;border-radius:10px;background:rgba(245,184,0,.14);color:var(--primary-deep)">${t.type}</span>
+      <span style="font-size:.65rem;padding:2px 6px;border-radius:10px;background:rgba(176,141,87,.16);color:#8A6D3F">${t.type}</span>
       <span>${t.title||'(无标题)'}</span></div>`).join(''):'<div class="empty">暂无任务</div>'}
   `;
 }
@@ -512,6 +715,7 @@ function renderMilk(){
   renderPhotoCard('photoLegs','legs',pToday.legs);
 
   renderMilkSummary();
+  milkPeriodStats();
 }
 
 function renderPhotoCard(id,key,src){
@@ -519,16 +723,16 @@ function renderPhotoCard(id,key,src){
   const input=card.querySelector('input');
   if(src){
     card.classList.add('has-photo');
-    const existing=card.querySelector('img');
+    const existing=card.querySelector('img.photo');
     if(existing)existing.src=src;
     else{
-      const img=document.createElement('img');img.src=src;
+      const img=document.createElement('img');img.className='photo';img.src=src;
       card.querySelector('.icon')?.remove();
       card.prepend(img);
     }
   }else{
     card.classList.remove('has-photo');
-    const img=card.querySelector('img');if(img)img.remove();
+    const img=card.querySelector('img.photo');if(img)img.remove();
     if(!card.querySelector('.icon')){
       const icon=document.createElement('span');icon.className='icon';
       icon.textContent=key==='face'?'🧑':'🦵';
@@ -539,12 +743,28 @@ function renderPhotoCard(id,key,src){
     const file=this.files[0];if(!file)return;
     const reader=new FileReader();
     reader.onload=function(){
-      const photos=S.get('milkPhotos',{});
-      if(!photos[today()])photos[today()]={};
-      photos[today()][key]=reader.result;
-      S.set('milkPhotos',photos);
-      renderMilk();
+      const img=new Image();
+      img.onload=function(){
+        try{
+          const max=900;
+          let w=img.width,h=img.height;
+          if(Math.max(w,h)>max){const r=max/Math.max(w,h);w=Math.round(w*r);h=Math.round(h*r)}
+          const canvas=document.createElement('canvas');
+          canvas.width=w;canvas.height=h;
+          canvas.getContext('2d').drawImage(img,0,0,w,h);
+          let data=canvas.toDataURL('image/jpeg',0.82);
+          if(data.length>1200000)data=canvas.toDataURL('image/jpeg',0.6);
+          const photos=S.get('milkPhotos',{});
+          if(!photos[today()])photos[today()]={};
+          photos[today()][key]=data;
+          S.set('milkPhotos',photos);
+          renderMilk();
+        }catch(e){alert('照片处理失败，请重试')}
+      };
+      img.onerror=function(){alert('照片读取失败，请重试或换一张')};
+      img.src=reader.result;
     };
+    reader.onerror=function(){alert('照片读取失败，请重试')};
     reader.readAsDataURL(file);
   };
 }
@@ -578,16 +798,20 @@ function renderMilkSummary(){
   `;
 }
 
-/* ============ BODY (Water & Poop) ============ */
-function renderBody(){
-  const td=today();
-  const waterLogs=S.get('waterLogs',{});
-  const poopLogs=S.get('poopLogs',{});
-  document.getElementById('waterCount').textContent=waterLogs[td]||0;
-  document.getElementById('poopCount').textContent=poopLogs[td]||0;
-  renderBodyHistory();
+function milkPeriodStats(){
+  const c=document.getElementById('milkPeriodContent');
+  const {start,checks,photos}=milkData();
+  const dates=Object.keys(checks);
+  if(!start&&!dates.length){c.innerHTML='<div class="empty">暂无打卡数据</div>';return}
+  c.innerHTML=periodSummary(dates,items=>{
+    if(!items.length)return '<div class="empty">本期暂无打卡</div>';
+    const checked=items.filter(d=>checks[d]).length;
+    const pDays=Object.keys(photos).filter(d=>items.includes(d)&&(photos[d].face||photos[d].legs)).length;
+    return periodStat('打卡天数',checked)+periodStat('照片天数',pDays)+periodStat('打卡率',Math.round(checked/items.length*100)+'%');
+  });
 }
 
+/* ============ BODY (Water & Poop) ============ */
 document.getElementById('waterPlus').addEventListener('click',()=>{
   const td=today();const logs=S.get('waterLogs',{});
   logs[td]=(logs[td]||0)+1;S.set('waterLogs',logs);renderBody();
@@ -604,6 +828,15 @@ document.getElementById('poopMinus').addEventListener('click',()=>{
   const td=today();const logs=S.get('poopLogs',{});
   logs[td]=Math.max(0,(logs[td]||0)-1);S.set('poopLogs',logs);renderBody();
 });
+function renderBody(){
+  const td=today();
+  const waterLogs=S.get('waterLogs',{});
+  const poopLogs=S.get('poopLogs',{});
+  document.getElementById('waterCount').textContent=waterLogs[td]||0;
+  document.getElementById('poopCount').textContent=poopLogs[td]||0;
+  renderBodyHistory();
+  bodyPeriodStats();
+}
 
 function renderBodyHistory(){
   const c=document.getElementById('bodyHistoryContent');
@@ -625,20 +858,178 @@ function renderBodyHistory(){
   `;
 }
 
+function bodyPeriodStats(){
+  const c=document.getElementById('bodyPeriodContent');
+  const waterLogs=S.get('waterLogs',{});
+  const poopLogs=S.get('poopLogs',{});
+  const dates=[...new Set([...Object.keys(waterLogs),...Object.keys(poopLogs)])];
+  if(!dates.length){c.innerHTML='<div class="empty">暂无记录数据</div>';return}
+  c.innerHTML=periodSummary(dates,items=>{
+    if(!items.length)return '<div class="empty">本期暂无记录</div>';
+    const w=items.reduce((s,d)=>s+(waterLogs[d]||0),0);
+    const p=items.reduce((s,d)=>s+(poopLogs[d]||0),0);
+    return periodStat('喝水总量',w+'L')+periodStat('拉粑次数',p+'次')+periodStat('记录天数',items.length);
+  });
+}
+
+/* ============ SPORT ============ */
+let sportData=S.get('sportRecords',{});
+let sportMonth=new Date();
+let sportDay=today();
+let sportRoutes=[];
+
+function sportYM(d){return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}`}
+
+function renderSport(){
+  const ym=sportYM(sportMonth);
+  document.getElementById('sportMonthTitle').textContent=`${sportMonth.getFullYear()}年${sportMonth.getMonth()+1}月`;
+  const cal=document.getElementById('sportCal');
+  const first=new Date(sportMonth.getFullYear(),sportMonth.getMonth(),1);
+  const startPad=(first.getDay()+6)%7;
+  const daysInMonth=new Date(sportMonth.getFullYear(),sportMonth.getMonth()+1,0).getDate();
+  let html='<div class="wk">一</div><div class="wk">二</div><div class="wk">三</div><div class="wk">四</div><div class="wk">五</div><div class="wk">六</div><div class="wk">日</div>';
+  for(let i=0;i<startPad;i++)html+='<div class="sport-day empty"></div>';
+  for(let d=1;d<=daysInMonth;d++){
+    const dateStr=`${ym}-${String(d).padStart(2,'0')}`;
+    const types=sportData[dateStr]?sportData[dateStr].map(r=>r.type):[];
+    html+=`<div class="sport-day ${dateStr===sportDay?'selected':''} ${dateStr===today()?'today':''}" data-date="${dateStr}"><span class="day-num">${d}</span>${stickerRow(types)}</div>`;
+  }
+  cal.innerHTML=html;
+  cal.querySelectorAll('.sport-day:not(.empty)').forEach(el=>el.addEventListener('click',()=>{
+    sportDay=el.dataset.date;
+    renderSport();
+  }));
+  showSportDay();
+  sportPeriodStats();
+}
+
+document.getElementById('sportPhoto').addEventListener('change',function(){
+  const file=this.files[0];if(!file)return;
+  compressImage(file,700,0.72,function(data){
+    if(!data){alert('照片处理失败，请重试');return}
+    pendingSportPhoto=data;
+    pendingSportDate=sportDay;
+    const prev=document.getElementById('sportPhotoPreview');
+    prev.src=data;prev.style.display='block';
+  });
+});
+let pendingSportPhoto='';
+let pendingSportDate='';
+document.getElementById('sportAddBtn').addEventListener('click',()=>{
+  const type=document.getElementById('sportType').value;
+  const dur=document.getElementById('sportDur').value;
+  const note=document.getElementById('sportNote').value.trim();
+  if(!sportData[sportDay])sportData[sportDay]=[];
+  const rec={id:Date.now(),type,dur,routes:sportRoutes.slice(),note};
+  if(pendingSportPhoto&&pendingSportDate===sportDay)rec.photo=pendingSportPhoto;
+  sportData[sportDay].push(rec);
+  S.set('sportRecords',sportData);
+  document.getElementById('sportNote').value='';
+  document.getElementById('sportPhoto').value='';
+  document.getElementById('sportPhotoPreview').style.display='none';
+  pendingSportPhoto='';pendingSportDate='';
+  sportRoutes=[];renderRouteChips();
+  renderSport();
+});
+function sportPeriodStats(){
+  const c=document.getElementById('sportPeriodContent');
+  const dates=Object.keys(sportData);
+  if(!dates.length){c.innerHTML='<div class="empty">暂无运动数据</div>';return}
+  c.innerHTML=periodSummary(dates,items=>{
+    if(!items.length)return '<div class="empty">本期暂无运动</div>';
+    const recs=items.reduce((a,d)=>a.concat(sportData[d]||[]),[]);
+    const hours=recs.reduce((s,r)=>s+(+r.dur||0),0);
+    const types=recs.reduce((o,r)=>{o[r.type]=(o[r.type]||0)+1;return o},{});
+    const routes=recs.reduce((s,r)=>s+(r.routes?r.routes.reduce((a,x)=>a+x.count,0):0),0);
+    return periodStat('运动次数',recs.length)+periodStat('总时长',hours+'h')+periodStat('攀岩线路',routes+'条')+Object.entries(types).map(([k,v])=>periodStat(k,v)).join('');
+  });
+}
+
+function showSportDay(){
+  document.getElementById('sportDayTitle').textContent=sportDay+' 的运动';
+  const list=document.getElementById('sportDayList');
+  const recs=sportData[sportDay]||[];
+  if(!recs.length){list.innerHTML='<div class="empty">这一天还没有运动记录，下面添加</div>';return}
+  list.innerHTML=recs.map(r=>{
+    const routes=r.routes&&r.routes.length?` · ${r.routes.map(x=>x.count+'条'+x.grade).join('、')}`:'';
+    return `<div class="task-item">
+      ${r.photo?`<img class="sport-thumb" src="${r.photo}" data-full="${r.photo}" alt="">`:''}
+      <span class="badge badge-media">${r.type}</span>
+      <span class="task-title">${r.dur} 小时${routes}${r.note?' · '+r.note:''}</span>
+      <button class="del-btn" data-id="${r.id}">✕</button></div>`;
+  }).join('');
+  list.querySelectorAll('.sport-thumb').forEach(im=>im.addEventListener('click',function(){
+    const lb=document.getElementById('lightbox');
+    document.getElementById('lightboxImg').src=this.dataset.full;
+    lb.style.display='flex';
+  }));
+  list.querySelectorAll('.del-btn').forEach(b=>b.addEventListener('click',()=>{
+    sportData[sportDay]=sportData[sportDay].filter(r=>r.id!==+b.dataset.id);
+    if(!sportData[sportDay].length)delete sportData[sportDay];
+    S.set('sportRecords',sportData);
+    renderSport();
+  }));
+}
+
+document.getElementById('lightbox').addEventListener('click',function(){this.style.display='none'});
+
+document.getElementById('sportPrev').addEventListener('click',()=>{
+  sportMonth=new Date(sportMonth.getFullYear(),sportMonth.getMonth()-1,1);
+  renderSport();
+});
+document.getElementById('sportNext').addEventListener('click',()=>{
+  sportMonth=new Date(sportMonth.getFullYear(),sportMonth.getMonth()+1,1);
+  renderSport();
+});
+document.getElementById('sportType').addEventListener('change',function(){
+  document.getElementById('routeRow').style.display=this.value==='攀岩'?'flex':'none';
+});
+document.getElementById('routeAddBtn').addEventListener('click',()=>{
+  const grade=document.getElementById('routeGrade').value;
+  const count=+document.getElementById('routeCount').value;
+  sportRoutes.push({grade,count});
+  renderRouteChips();
+});
+function renderRouteChips(){
+  const c=document.getElementById('routeChips');
+  c.innerHTML=sportRoutes.map((r,i)=>`<span class="chip">${r.count}条${r.grade}<span class="x" data-i="${i}">✕</span></span>`).join('');
+  c.querySelectorAll('.x').forEach(x=>x.addEventListener('click',()=>{
+    sportRoutes.splice(+x.dataset.i,1);
+    renderRouteChips();
+  }));
+}
+
 /* ============ SPLASH ============ */
 const splash=document.getElementById('splash');
+const typeOut=document.getElementById('typeOut');
+const fullText='今天也请好好生活!';
+const tailText=' :-) ';
+let typeI=0,typePhase=0;
+function typeTick(){
+  if(typePhase===0){
+    if(typeI<fullText.length){typeOut.textContent=fullText.slice(0,++typeI);setTimeout(typeTick,170)}
+    else{typePhase=1;setTimeout(typeTick,420)}
+  }else if(typePhase===1){
+    if(typeI>fullText.length-1){typeOut.textContent=fullText.slice(0,--typeI);setTimeout(typeTick,80)}
+    else{typePhase=2;typeI=0;setTimeout(typeTick,260)}
+  }else if(typePhase===2){
+    if(typeI<tailText.length){typeOut.textContent=fullText.slice(0,fullText.length-1)+tailText.slice(0,++typeI);setTimeout(typeTick,110)}
+  }
+}
+typeTick();
 function hideSplash(){
   if(!splash||splash.classList.contains('hide'))return;
   splash.classList.add('hide');
   setTimeout(()=>splash.remove(),700);
 }
 splash.addEventListener('click',hideSplash);
-setTimeout(hideSplash,2200);
+setTimeout(hideSplash,5200);
 
 /* ============ INIT ============ */
 renderTasks();
 renderMilk();
 renderBody();
+renderSport();
 </script>
 </body>
 </html>
