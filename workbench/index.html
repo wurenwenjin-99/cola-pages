@@ -77,6 +77,14 @@ body{
   display:flex;align-items:center;gap:8px;padding:10px 12px;
   background:var(--tile);border-radius:10px;margin-bottom:6px
 }
+.task-item.is-done{opacity:.68}
+.task-item.is-done .task-title{text-decoration:line-through;text-decoration-thickness:1.5px;text-decoration-color:var(--primary-deep)}
+.task-item .done-btn{
+  flex:0 0 auto;width:24px;height:24px;border:1.5px solid var(--primary);
+  border-radius:50%;background:transparent;color:var(--primary-deep);font-size:.9rem;
+  line-height:1;cursor:pointer;display:flex;align-items:center;justify-content:center;padding:0
+}
+.task-item.is-done .done-btn{background:var(--green);border-color:var(--green);color:#FBF8F1}
 .task-item .badge{
   font-size:.65rem;font-weight:600;padding:3px 8px;border-radius:20px;white-space:nowrap
 }
@@ -85,6 +93,8 @@ body{
 .badge-custom{background:rgba(176,96,80,.12);color:#A05545}
 .task-item .task-title{flex:1;font-size:.85rem}
 .task-item .del-btn{font-size:.75rem;color:var(--ink3);cursor:pointer;border:none;background:none;padding:4px}
+.summary-note,.period-note{font-size:.8rem;line-height:1.75;color:var(--ink2);margin:0 0 12px;padding:10px 12px;border-left:3px solid var(--primary);background:rgba(176,141,87,.08)}
+.period-note{flex-basis:100%;margin:0 0 2px}
 
 /* Add task form */
 .add-form{display:flex;flex-direction:column;gap:8px;margin-bottom:16px}
@@ -127,6 +137,17 @@ body{
 .switch input:checked+.slider{background:var(--green)}
 .switch input:checked+.slider::before{transform:translateX(22px)}
 .switch.cheat input:checked+.slider{background:var(--primary)}
+.switch.flower input:checked+.slider{background:rgba(240,200,96,.3)}
+.switch.flower input:checked+.slider::before{
+  content:'✿';display:flex;align-items:center;justify-content:center;
+  color:#B06050;background:#F0C860;font-size:1.05rem;line-height:1;
+  transform:translateX(22px);animation:milkFlowerSpin 1s cubic-bezier(.22,.8,.32,1) 1
+}
+@keyframes milkFlowerSpin{
+  0%{transform:translateX(22px) rotate(0deg) scale(.72)}
+  65%{transform:translateX(22px) rotate(260deg) scale(1.12)}
+  100%{transform:translateX(22px) rotate(360deg) scale(1)}
+}
 
 /* Photos */
 .photo-section{display:flex;gap:12px;margin-bottom:16px}
@@ -136,9 +157,13 @@ body{
   gap:8px;cursor:pointer;border:2px dashed #C9BFAA;transition:.2s;min-height:100px;justify-content:center
 }
 .photo-card.has-photo{border-style:solid;border-color:var(--green)}
-.photo-card img.photo{width:100%;border-radius:8px;object-fit:cover;max-height:160px}
+.photo-card img.photo{width:100%;border-radius:8px;object-fit:cover;max-height:160px;cursor:zoom-in}
 .photo-card .label{font-size:.75rem;color:var(--ink3);font-weight:500}
 .photo-card .icon{font-size:1.5rem}
+.skin-observe{flex-basis:100%;font-size:.78rem;line-height:1.75;color:var(--ink2);padding:9px 0;border-top:1px solid #DCD3BF;border-bottom:1px solid #DCD3BF}
+.skin-observe div+div{margin-top:7px}
+.skin-observe b{color:var(--primary-deep);font-weight:700}
+.photo-compare .compare-card img{cursor:zoom-in}
 
 /* Counters */
 .counter-row{display:flex;gap:12px;margin-bottom:16px}
@@ -263,6 +288,67 @@ body{
 }
 .caret{display:inline-block;width:.52em;height:1em;background:#F2EDE3;vertical-align:-.12em;margin-left:2px;animation:caretBlink .9s steps(1) infinite}
 @keyframes caretBlink{50%{opacity:0}}
+
+/* Letter (周一信封) */
+.letter-overlay{
+  position:fixed;inset:0;z-index:998;background:rgba(40,36,28,.62);
+  display:none;align-items:center;justify-content:center;padding:24px;
+  opacity:0;transition:opacity .45s ease
+}
+.letter-overlay.show{opacity:1}
+.letter-wrap{position:relative;width:min(330px,90vw);display:flex;flex-direction:column;align-items:center}
+.envelope{
+  position:relative;width:100%;height:200px;cursor:pointer;
+  background:linear-gradient(165deg,#FDFBF6 0%,#F7F4EC 55%,#F1EDE1 100%);
+  border-radius:12px;
+  display:flex;align-items:flex-end;justify-content:center;
+  padding-bottom:38px;
+  box-shadow:0 24px 60px rgba(40,36,26,.35),0 4px 14px rgba(40,36,26,.18),inset 0 0 0 1px rgba(255,255,255,.65);
+  transition:transform .45s ease,opacity .45s ease
+}
+.envelope::before{
+  content:'';position:absolute;top:0;left:0;right:0;height:56%;
+  background:linear-gradient(170deg,#F6F2E8 0%,#EFEADD 70%,#E6E0CF 100%);
+  clip-path:polygon(0 0,50% 90%,100% 0);
+  border-radius:12px 12px 0 0;
+  box-shadow:0 1px 0 rgba(160,150,125,.35)
+}
+.envelope::after{
+  content:'';position:absolute;inset:0;border-radius:12px;pointer-events:none;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='120' height='120' filter='url(%23n)' opacity='0.05'/%3E%3C/svg%3E")
+}
+.envelope-sticker{
+  position:absolute;top:82px;left:50%;z-index:2;width:29px;height:29px;
+  transform:translateX(-50%) rotate(-8deg);
+  filter:drop-shadow(0 2px 4px rgba(60,52,35,.24));
+  animation:envelopeStickerFlash 1.15s ease-out .25s 1 both;
+  transition:transform .2s
+}
+@keyframes envelopeStickerFlash{
+  0%,100%{filter:drop-shadow(0 2px 4px rgba(60,52,35,.24)) brightness(1)}
+  38%{filter:drop-shadow(0 0 10px rgba(255,239,155,.95)) brightness(1.35)}
+  56%{filter:drop-shadow(0 2px 4px rgba(60,52,35,.24)) brightness(1)}
+}
+.envelope:hover .envelope-sticker{transform:translateX(-50%) rotate(-3deg) scale(1.06)}
+.envelope-sticker svg{width:100%;height:100%;display:block}
+.envelope.open{transform:scale(.92) translateY(-30px);opacity:0}
+.letter-hint{margin-top:18px;font-size:.78rem;color:#EDE6D3;opacity:.85;letter-spacing:.05em}
+.letter-paper{
+  display:none;width:100%;max-height:74vh;overflow-y:auto;
+  background:linear-gradient(180deg,#FBF5E9,#F5EDDA);
+  border-radius:14px;padding:24px 22px;box-shadow:0 16px 48px rgba(0,0,0,.4);
+  animation:paperIn .5s ease
+}
+.letter-paper.show{display:block}
+@keyframes paperIn{from{transform:translateY(18px);opacity:0}to{transform:translateY(0);opacity:1}}
+.letter-head{font-family:'方正像素12','FZXS12','PingFang SC',monospace;font-size:.72rem;color:#8A6D3F;letter-spacing:.12em;margin-bottom:14px;text-align:center}
+.letter-body{font-family:Georgia,'Songti SC',serif;font-size:.95rem;line-height:1.9;color:#4A4338}
+.letter-body p{margin:0 0 1em;text-indent:2em}
+.letter-body .sig{margin-top:1.4em;text-align:right;font-style:italic;color:#8A6D3F;text-indent:0;font-size:.88rem}
+.letter-close{
+  margin-top:20px;padding:11px;border-radius:10px;background:#B08D57;color:#FBF8F1;
+  text-align:center;font-size:.85rem;font-weight:600;cursor:pointer;letter-spacing:.05em
+}
 </style>
 </head>
 <body>
@@ -461,6 +547,21 @@ body{
 <!-- Lightbox -->
 <div class="lightbox" id="lightbox"><img id="lightboxImg" src="" alt=""></div>
 
+<!-- Weekly letter -->
+<div class="letter-overlay" id="letterOverlay">
+  <div class="letter-wrap">
+    <div class="envelope" id="envelope">
+      <div class="envelope-sticker"><svg viewBox="0 0 24 24"><path d="M12 2.5l2.8 6 6.7.8-4.9 4.6 1.3 6.6L12 17.4l-5.9 3.1 1.3-6.6L2.5 9.3l6.7-.8z" fill="#FFFFFF" stroke="#E2DCCB" stroke-width="1.4" transform="translate(12 12) scale(1.25) translate(-12 -12)"/><path d="M12 2.5l2.8 6 6.7.8-4.9 4.6 1.3 6.6L12 17.4l-5.9 3.1 1.3-6.6L2.5 9.3l6.7-.8z" fill="#F0C860" stroke="#B98F45" stroke-width=".9"/></svg></div>
+    </div>
+    <div class="letter-hint" id="letterHint">点一下，打开这封信</div>
+    <div class="letter-paper" id="letterPaper">
+      <div class="letter-head">🕊 这周见信</div>
+      <div class="letter-body" id="letterBody"></div>
+      <div class="letter-close" id="letterClose">收下这封信</div>
+    </div>
+  </div>
+</div>
+
 <script>
 /* ==================== STORAGE ==================== */
 const S = {
@@ -511,6 +612,7 @@ function ymKey(d){return d.slice(0,7)}
 function qKey(d){return d.slice(0,4)+'-Q'+Math.ceil(+d.slice(5,7)/3)}
 function yKey(d){return d.slice(0,4)}
 function periodStat(label,val){return `<div class="period-stat"><b>${val}</b>${label}</div>`}
+function periodNote(text){return `<div class="period-note">${text}</div>`}
 function spanDays(dates){
   if(!dates.length)return 0;
   const min=Math.min(...dates.map(d=>+new Date(d)));
@@ -559,17 +661,36 @@ function stickerSVG(type){
   const body=shape==='circle'||shape==='square'?STICKER_PATHS[shape]:`<path d="${STICKER_PATHS[shape]}"/>`;
   return `<svg viewBox="0 0 24 24"><g fill="${fill}" stroke="#8A6D3F" stroke-width="1">${body}</g></svg>`;
 }
-function stickerRow(types){
-  if(!types||!types.length)return '';
-  const n=Math.min(types.length,4);
+function stickerSeed(value){
+  let h=2166136261;
+  for(let i=0;i<String(value).length;i++){h^=String(value).charCodeAt(i);h=Math.imul(h,16777619)}
+  return h>>>0;
+}
+function stickerPosition(id,index){
+  const seed=stickerSeed(`${id||'legacy'}-${index||0}`);
+  return {
+    top:(seed%106)-10,
+    left:((Math.imul(seed,31)>>>0)%106)-10,
+    rot:((Math.imul(seed,17)>>>0)%51)-25
+  };
+}
+function ensureSticker(item,index){
+  if(item.sticker&&Number.isFinite(+item.sticker.top)&&Number.isFinite(+item.sticker.left)&&Number.isFinite(+item.sticker.rot))return false;
+  item.sticker=stickerPosition(item.id,index);
+  return true;
+}
+function stickerRow(items){
+  if(!items||!items.length)return '';
+  const n=Math.min(items.length,4);
   let s='<span class="day-stars">';
   for(let i=0;i<n;i++){
-    const top=Math.round(Math.random()*105-10);
-    const left=Math.round(Math.random()*105-10);
-    const rot=Math.round(Math.random()*50-25);
-    s+=`<i style="top:${top}%;left:${left}%;transform:rotate(${rot}deg)">${stickerSVG(types[i])}</i>`;
+    const item=items[i],pos=item.sticker||stickerPosition(item.id,i);
+    s+=`<i style="top:${pos.top}%;left:${pos.left}%;transform:rotate(${pos.rot}deg)">${stickerSVG(item.type)}</i>`;
   }
-  if(types.length>4)s+=`<em style="top:${Math.round(Math.random()*70+15)}%;left:${Math.round(Math.random()*70+15)}%">+${types.length-4}</em>`;
+  if(items.length>4){
+    const pos=items[4].sticker||stickerPosition(items[4].id,4);
+    s+=`<em style="top:${pos.top}%;left:${pos.left}%">+${items.length-4}</em>`;
+  }
   return s+'</span>';
 }
 
@@ -601,17 +722,22 @@ function taskPeriodStats(){
   c.innerHTML=periodSummary(dates,items=>{
     if(!items.length)return '<div class="empty">本月暂无任务</div>';
     const types=items.reduce((o,t)=>{o[t.type]=(o[t.type]||0)+1;return o},{});
-    return periodStat('任务总数',items.length)+Object.entries(types).map(([k,v])=>periodStat(k,v)).join('');
+    const done=items.filter(t=>t.done).length;
+    const note=done===items.length?'这一段安排都落地了。不是把格子填满，而是你答应自己的事，真的有被接住。':done?`已经划掉 ${done} 项，剩下的先放在这里，不用把生活一次性清空。`:'任务先写下来，已经是在帮混乱的生活排队了，接下来慢慢做就好。';
+    return periodNote(note)+periodStat('任务总数',items.length)+periodStat('已完成',done)+Object.entries(types).map(([k,v])=>periodStat(k,v)).join('');
   });
 }
 
 function renderTasks(){
   const cal=document.getElementById('taskCal');
   const days=weekDays();const td=today();
+  let stickerChanged=false;
+  tasks.forEach((t,i)=>{if(ensureSticker(t,i))stickerChanged=true});
+  if(stickerChanged)S.set('tasks',tasks);
   cal.innerHTML=days.map((d,i)=>{
-    const dayTypes=tasks.filter(t=>t.day===dayLabel(d)).map(t=>t.type);
+    const dayItems=tasks.filter(t=>t.day===dayLabel(d));
     const cls=['cal-day',d===td?'today':''].filter(Boolean).join(' ');
-    const stars=stickerRow(dayTypes);
+    const stars=stickerRow(dayItems);
     return `<div class="${cls}" data-day="${dayLabel(d)}" data-date="${d}">
       <span class="day-num">${dayNum(d)}</span><span class="day-label">${dayLabel(d)}</span>${stars}</div>`;
   }).join('');
@@ -637,13 +763,22 @@ function showDayDetail(day){
   if(!dayTasks.length){list.innerHTML='<div class="empty">暂无任务，下方添加</div>';return}
   list.innerHTML=dayTasks.map(t=>{
     const cls=t.type==='自媒体更新'?'badge-media':t.type==='日常事件'?'badge-daily':'badge-custom';
-    return `<div class="task-item">
+    return `<div class="task-item ${t.done?'is-done':''}">
+      <button class="done-btn" data-id="${t.id}" aria-label="${t.done?'标记未完成':'标记完成'}" title="${t.done?'标记未完成':'标记完成'}">${t.done?'✓':'○'}</button>
       <span class="badge ${cls}">${t.type}</span>
       <span class="task-title">${t.title||'(无标题)'}</span>
-      <button class="del-btn" data-id="${t.id}">✕</button></div>`;
+      <button class="del-btn" data-id="${t.id}" aria-label="删除任务" title="删除任务">✕</button></div>`;
   }).join('');
-  list.querySelectorAll('.del-btn').forEach(b=>b.addEventListener('click',()=>{
-    tasks=tasks.filter(t=>t.id!==+b.dataset.id);
+  list.querySelectorAll('.done-btn').forEach(b=>b.addEventListener('click',()=>{
+    const task=tasks.find(t=>String(t.id)===b.dataset.id);
+    if(!task)return;
+    task.done=!task.done;
+    S.set('tasks',tasks);
+    renderTasks();
+  }));
+  list.querySelectorAll('.del-btn').forEach(b=>b.addEventListener('click',e=>{
+    e.stopPropagation();
+    tasks=tasks.filter(t=>String(t.id)!==b.dataset.id);
     S.set('tasks',tasks);
     renderTasks();
   }));
@@ -658,7 +793,8 @@ document.getElementById('addTaskBtn').addEventListener('click',()=>{
   if(type==='__custom'){type=document.getElementById('customType').value.trim();if(!type)return}
   const day=selectedDay;
   const title=document.getElementById('taskTitle').value.trim();
-  tasks.push({id:Date.now(),type,day,title});
+  const id=Date.now();
+  tasks.push({id,type,day,title,done:false,sticker:stickerPosition(id,tasks.length)});
   S.set('tasks',tasks);
   document.getElementById('taskTitle').value='';
   document.getElementById('customType').value='';
@@ -669,19 +805,22 @@ document.getElementById('addTaskBtn').addEventListener('click',()=>{
 function renderTaskSummary(){
   const c=document.getElementById('taskSummaryContent');
   const wp=weekDays().map(d=>dayLabel(d));
-  const mediaTasks=tasks.filter(t=>t.type==='自媒体更新');
-  const dailyTasks=tasks.filter(t=>t.type==='日常事件');
+  const weekTasks=tasks.filter(t=>wp.includes(t.day));
+  const mediaTasks=weekTasks.filter(t=>t.type==='自媒体更新');
+  const done=weekTasks.filter(t=>t.done).length;
+  const note=!weekTasks.length?'这一周还没安排什么也没关系，空白不是欠账。':done===weekTasks.length?'这周的任务都划掉了。看起来只是几个小勾，其实是你把想做的事一件件带到了现实里。':done?`这周已经完成 ${done} 项，剩下的不用催得太紧，能继续往前一点就很好。`:'先把想做的事放到日历里，生活就有了一个可以落脚的地方。';
   c.innerHTML=`
+    <p class="summary-note">${note}</p>
     <p style="font-weight:600;margin-bottom:8px">📈 自媒体更新 · ${mediaTasks.length} 项</p>
     <div class="summary-grid">${wp.map(d=>{
-      const count=tasks.filter(t=>t.day===d).length;
-      return `<div class="summary-day ${count>0?'done':'missed'}"><span class="s-num">${count}</span>${d}</div>`;
+      const dayItems=weekTasks.filter(t=>t.day===d);const count=dayItems.length;const dayDone=dayItems.filter(t=>t.done).length;
+      return `<div class="summary-day ${count>0?'done':'missed'}"><span class="s-num">${count?dayDone+'/'+count:'0'}</span>${d}</div>`;
     }).join('')}</div>
     <p style="font-weight:600;margin:16px 0 8px">📝 全部任务清单</p>
-    ${tasks.length?tasks.map(t=>`<div style="font-size:.8rem;padding:4px 0;display:flex;gap:8px">
+    ${tasks.length?tasks.map(t=>`<div style="font-size:.8rem;padding:4px 0;display:flex;gap:8px;opacity:${t.done?'.58':'1'}">
       <span style="color:var(--ink3);min-width:36px">${t.day}</span>
       <span style="font-size:.65rem;padding:2px 6px;border-radius:10px;background:rgba(176,141,87,.16);color:#8A6D3F">${t.type}</span>
-      <span>${t.title||'(无标题)'}</span></div>`).join(''):'<div class="empty">暂无任务</div>'}
+      <span style="text-decoration:${t.done?'line-through':'none'}">${t.title||'(无标题)'}</span></div>`).join(''):'<div class="empty">暂无任务</div>'}
   `;
 }
 
@@ -693,11 +832,8 @@ function milkData(){
   return {start,checks,photos};
 }
 
-function isCheatDay(start){
-  if(!start)return false;
-  const diff=Math.floor((new Date(today())-new Date(start))/(86400000));
-  return diff>=0&&diff%14===13; // day 14, 28, 42...
-}
+function milkCheckCount(checks){return Object.values(checks).filter(Boolean).length}
+function milkRewardReady(checks,td){return milkCheckCount(checks)>=7&&!!checks[td]}
 
 function renderMilk(){
   let {start,checks,photos}=milkData();
@@ -708,16 +844,21 @@ function renderMilk(){
 
   const diff=Math.floor((new Date(td)-new Date(start))/(86400000));
   const days=Math.max(0,diff);
-  const cheat=isCheatDay(start);
+  const reward=milkRewardReady(checks,td);
 
   document.getElementById('milkDays').textContent=days;
   document.getElementById('milkDaysNum').textContent=days;
-  document.getElementById('milkDays').className='count'+(cheat?' cheat':'');
-  document.getElementById('cheatBadge').style.display=cheat?'inline-block':'none';
+  document.getElementById('milkDays').className='count'+(reward?' cheat':'');
+  const badge=document.getElementById('cheatBadge');
+  badge.textContent=reward?'🌼 今日可以喝牛奶':'';
+  badge.style.display=reward?'inline-block':'none';
 
   const toggle=document.getElementById('milkToggle');
   toggle.checked=!!checks[td];
-  document.getElementById('milkSwitchWrap').className='switch'+(cheat?' cheat':'');
+  const wrap=document.getElementById('milkSwitchWrap');
+  wrap.className='switch'+(reward?' flower':'');
+  wrap.title=reward?'坚持打卡满7次，今天奖励自己一杯牛奶':'今日打卡';
+  document.querySelector('#panel-milk .toggle-label').textContent=reward?'今日奖励 · 可以喝牛奶':'今日打卡';
 
   toggle.onchange=function(){checks[td]=this.checked;S.set('milkChecks',checks);renderMilk()};
 
@@ -730,6 +871,19 @@ function renderMilk(){
   milkPeriodStats();
 }
 
+function openPhotoLightbox(src){
+  if(!src)return;
+  document.getElementById('lightboxImg').src=src;
+  document.getElementById('lightbox').style.display='flex';
+}
+function skinObserve(dates,photos){
+  const faceDays=dates.filter(d=>photos[d]&&photos[d].face).length;
+  const legDays=dates.filter(d=>photos[d]&&photos[d].legs).length;
+  const faceText=faceDays?`留下了 ${faceDays} 天脸部照片，暗沉的明暗和肤色均匀度可以在相近光线下慢慢对照。`:'脸部还没有留下照片，暗沉先不急着下结论，等下一次愿意照见自己时再看。';
+  const legText=legDays?`留下了 ${legDays} 天腿部照片，可以留意痕迹和湿疹的范围、颜色、边缘变化；某一天的光线不代表全部。`:'腿部还没有留下照片，痕迹和湿疹的变化先让它保持安静，之后再慢慢观察。';
+  return `<div class="skin-observe"><div><b>脸部 · 暗沉</b> ${faceText}</div><div><b>腿部 · 痕迹 / 湿疹</b> ${legText}</div></div>`;
+}
+
 function renderPhotoCard(id,key,src){
   const card=document.getElementById(id);
   const input=card.querySelector('input');
@@ -738,7 +892,7 @@ function renderPhotoCard(id,key,src){
     const existing=card.querySelector('img.photo');
     if(existing)existing.src=src;
     else{
-      const img=document.createElement('img');img.className='photo';img.src=src;
+      const img=document.createElement('img');img.className='photo';img.src=src;img.title='点击查看大图';
       card.querySelector('.icon')?.remove();
       card.prepend(img);
     }
@@ -783,10 +937,12 @@ function renderPhotoCard(id,key,src){
 
 document.getElementById('photoFace').addEventListener('click',function(e){
   if(e.target.tagName==='INPUT')return;
+  if(e.target.tagName==='IMG'){openPhotoLightbox(e.target.src);return}
   this.querySelector('input').click();
 });
 document.getElementById('photoLegs').addEventListener('click',function(e){
   if(e.target.tagName==='INPUT')return;
+  if(e.target.tagName==='IMG'){openPhotoLightbox(e.target.src);return}
   this.querySelector('input').click();
 });
 
@@ -795,6 +951,13 @@ function renderMilkSummary(){
   const {start,checks,photos}=milkData();
   const wd=weekDays();
   c.innerHTML=`
+    <p class="summary-note">${(() => {
+      const checked=wd.filter(d=>checks[d]).length;
+      if(checked===7)return '这一周每天都记下来了。不是因为你突然变得完美，而是你真的在照顾自己的节奏。';
+      if(checked>=4)return `这周有 ${checked} 天记得打卡，习惯正在慢慢长出形状，偶尔漏一天也不影响你继续。`;
+      if(checked)return `这周先留下了 ${checked} 次痕迹，能想起自己、按下这个开关，就已经算数。`;
+      return '今天还没有按下开关，也不用急着责怪自己，记录是为了看见，不是为了打分。';
+    })()}</p>
     <div class="summary-grid" style="margin-bottom:12px">${wd.map(d=>{
       const done=!!checks[d];return `<div class="summary-day ${done?'done':'missed'}">
         <span class="s-num">${done?'✅':'❌'}</span>${fmtDate(d)}</div>`;
@@ -803,11 +966,13 @@ function renderMilkSummary(){
       const p=photos[d]||{};
       return `<div class="compare-card">
         <div class="day-label">${fmtDate(d)}</div>
-        ${p.face?`<img src="${p.face}" alt="face">`:'<div style="height:60px;display:flex;align-items:center;justify-content:center;font-size:.6rem;color:var(--ink3)">无照片</div>'}
-        ${p.legs?`<img src="${p.legs}" alt="legs" style="margin-top:2px">`:''}
+        ${p.face?`<img src="${p.face}" alt="face" title="点击查看大图">`:'<div style="height:60px;display:flex;align-items:center;justify-content:center;font-size:.6rem;color:var(--ink3)">无照片</div>'}
+        ${p.legs?`<img src="${p.legs}" alt="legs" title="点击查看大图" style="margin-top:2px">`:''}
       </div>`;
     }).join('')}</div>
+    ${skinObserve(wd,photos)}
   `;
+  c.querySelectorAll('.photo-compare img').forEach(img=>img.addEventListener('click',()=>openPhotoLightbox(img.src)));
 }
 
 function milkPeriodStats(){
@@ -819,7 +984,8 @@ function milkPeriodStats(){
     if(!items.length)return '<div class="empty">本期暂无打卡</div>';
     const checked=items.filter(d=>checks[d]).length;
     const pDays=Object.keys(photos).filter(d=>items.includes(d)&&(photos[d].face||photos[d].legs)).length;
-    return periodStat('打卡天数',checked)+periodStat('照片天数',pDays)+periodStat('打卡率',Math.round(checked/items.length*100)+'%');
+    const note=checked===items.length?'这一期没有把自己落下。每一次打卡都很小，但小事重复起来，就会变成一种稳稳的照顾。':checked?`留下了 ${checked} 次打卡和 ${pDays} 天照片，已经足够说明你有在认真看见自己的变化。`:'这一期暂时没有打卡记录，先别急着补答案，下一次想起来时再从今天开始。';
+    return periodNote(note)+skinObserve(items,photos)+periodStat('打卡天数',checked)+periodStat('照片天数',pDays)+periodStat('打卡率',Math.round(checked/items.length*100)+'%');
   });
 }
 
@@ -880,7 +1046,8 @@ function bodyPeriodStats(){
     if(!items.length)return '<div class="empty">本期暂无记录</div>';
     const w=items.reduce((s,d)=>s+(waterLogs[d]||0),0);
     const p=items.reduce((s,d)=>s+(poopLogs[d]||0),0);
-    return periodStat('喝水总量',w+'L')+periodStat('拉粑次数',p+'次')+periodStat('记录天数',items.length);
+    const note=w&&p?`这段时间喝下了 ${w}L 水，也好好回应了身体 ${p} 次。生活不只靠大目标推进，这些具体的小事也在托住你。`:w?`水有在喝，一共 ${w}L。身体的提醒被你听见了，剩下的继续慢慢来。`:p?`留下了 ${p} 次身体记录。看起来普通，却是你和自己保持联系的方式。`:'这一期没有留下数字，也不代表什么都没发生，身体有自己的节奏。';
+    return periodNote(note)+periodStat('喝水总量',w+'L')+periodStat('拉粑次数',p+'次')+periodStat('记录天数',items.length);
   });
 }
 
@@ -901,10 +1068,13 @@ function renderSport(){
   const daysInMonth=new Date(sportMonth.getFullYear(),sportMonth.getMonth()+1,0).getDate();
   let html='<div class="wk">一</div><div class="wk">二</div><div class="wk">三</div><div class="wk">四</div><div class="wk">五</div><div class="wk">六</div><div class="wk">日</div>';
   for(let i=0;i<startPad;i++)html+='<div class="sport-day empty"></div>';
+  let stickerChanged=false;
+  Object.values(sportData).forEach(records=>records.forEach((r,i)=>{if(ensureSticker(r,i))stickerChanged=true}));
+  if(stickerChanged)S.set('sportRecords',sportData);
   for(let d=1;d<=daysInMonth;d++){
     const dateStr=`${ym}-${String(d).padStart(2,'0')}`;
-    const types=sportData[dateStr]?sportData[dateStr].map(r=>r.type):[];
-    html+=`<div class="sport-day ${dateStr===sportDay?'selected':''} ${dateStr===today()?'today':''}" data-date="${dateStr}"><span class="day-num">${d}</span>${stickerRow(types)}</div>`;
+    const items=sportData[dateStr]||[];
+    html+=`<div class="sport-day ${dateStr===sportDay?'selected':''} ${dateStr===today()?'today':''}" data-date="${dateStr}"><span class="day-num">${d}</span>${stickerRow(items)}</div>`;
   }
   cal.innerHTML=html;
   cal.querySelectorAll('.sport-day:not(.empty)').forEach(el=>el.addEventListener('click',()=>{
@@ -932,7 +1102,7 @@ document.getElementById('sportAddBtn').addEventListener('click',()=>{
   const dur=document.getElementById('sportDur').value;
   const note=document.getElementById('sportNote').value.trim();
   if(!sportData[sportDay])sportData[sportDay]=[];
-  const rec={id:Date.now(),type,dur,routes:sportRoutes.slice(),note};
+  const rec={id:Date.now(),type,dur,routes:sportRoutes.slice(),note,sticker:stickerPosition(Date.now(),sportData[sportDay].length)};
   if(pendingSportPhoto&&pendingSportDate===sportDay)rec.photo=pendingSportPhoto;
   sportData[sportDay].push(rec);
   S.set('sportRecords',sportData);
@@ -953,7 +1123,9 @@ function sportPeriodStats(){
     const hours=recs.reduce((s,r)=>s+(+r.dur||0),0);
     const types=recs.reduce((o,r)=>{o[r.type]=(o[r.type]||0)+1;return o},{});
     const routes=recs.reduce((s,r)=>s+(r.routes?r.routes.reduce((a,x)=>a+x.count,0):0),0);
-    return periodStat('运动次数',recs.length)+periodStat('总时长',hours+'h')+periodStat('攀岩线路',routes+'条')+Object.entries(types).map(([k,v])=>periodStat(k,v)).join('');
+    const names=[...new Set(recs.map(r=>r.type))];
+    const note=routes?`这段时间你在墙上留下了 ${routes} 条线路。每一次伸手、犹豫、再往上够一点，都是身体在告诉你：我还可以。`:hours>=3?`一共动了 ${hours} 小时，${names.slice(0,2).join('、')}。不是为了把自己练成谁，只是让身体重新有了声音。`:recs.length?`留下了 ${recs.length} 次运动记录。时间不算长也没关系，愿意动起来的那一刻已经很珍贵。`:'这一期还没有运动记录，身体不需要被催促，准备好时再出发。';
+    return periodNote(note)+periodStat('运动次数',recs.length)+periodStat('总时长',hours+'h')+periodStat('攀岩线路',routes+'条')+Object.entries(types).map(([k,v])=>periodStat(k,v)).join('');
   });
 }
 
@@ -1032,7 +1204,10 @@ typeTick();
 function hideSplash(){
   if(!splash||splash.classList.contains('hide'))return;
   splash.classList.add('hide');
-  setTimeout(()=>splash.remove(),700);
+  setTimeout(()=>{
+    splash.remove();
+    maybeShowLetter();
+  },700);
 }
 splash.addEventListener('click',hideSplash);
 setTimeout(hideSplash,5200);
@@ -1042,6 +1217,116 @@ renderTasks();
 renderMilk();
 renderBody();
 renderSport();
+
+/* ============ WEEKLY LETTER ============ */
+function collectLastWeek(){
+  const water=S.get('waterLogs',{}),poop=S.get('poopLogs',{}),checks=S.get('milkChecks',{}),photos=S.get('milkPhotos',{}),sport=S.get('sportRecords',{});
+  const thisMon=new Date(getMonday(today()));
+  const dates=[];
+  for(let i=7;i>=1;i--){const d=new Date(thisMon);d.setDate(d.getDate()-i);dates.push(d.toISOString().slice(0,10))}
+  const sportList=[];dates.forEach(d=>{(sport[d]||[]).forEach(r=>sportList.push({d,r}))});
+  let totalDur=0,totalRoutes=0;const typeMap={};
+  sportList.forEach(({r})=>{totalDur+=+r.dur||0;totalRoutes+=(r.routes||[]).reduce((a,x)=>a+x.count,0);typeMap[r.type]=(typeMap[r.type]||0)+1});
+  const checkDays=dates.filter(d=>checks[d]).length;
+  let consec=0,best=0;dates.forEach(d=>{consec=checks[d]?consec+1:0;if(consec>best)best=consec});
+  const photoDays=dates.filter(d=>photos[d]&&(photos[d].face||photos[d].legs)).length;
+  const totalWater=dates.reduce((s,d)=>s+(water[d]||0),0);
+  const totalPoop=dates.reduce((s,d)=>s+(poop[d]||0),0);
+  const activeDays=dates.filter(d=>sport[d]&&sport[d].length).length;
+  return {sportList,totalDur,totalRoutes,typeMap,checkDays,best,photoDays,totalWater,totalPoop,activeDays};
+}
+
+function buildLetter(){
+  const w=collectLastWeek();
+  const hasAny=w.sportList.length||w.checkDays||w.photoDays||w.totalWater||w.totalPoop;
+  const p=[];
+  const P=s=>p.push(`<p>${s}</p>`);
+
+  if(!hasAny){
+    P('上一周好像很安静，没留下什么记录。');
+    P('不过没关系。有些日子是用来奔忙的，有些日子是用来休息的，都是过日子。');
+    P('能把自己照顾好，比在纸上留下多少痕迹都重要。');
+  }else{
+    P('上一周过去了。我翻了翻你留下的痕迹，想跟你说说话。');
+
+    if(w.sportList.length){
+      const types=Object.keys(w.typeMap);
+      const names=types.length>2?types.slice(0,2).join('、')+'……':types.join('、');
+      const isClimb=w.typeMap['攀岩']&&w.typeMap['攀岩']>=Math.max(...Object.values(w.typeMap));
+      let s;
+      if(isClimb&&w.totalRoutes>0){
+        s=`最亮的一笔，是你去爬了 ${w.activeDays} 天攀岩，一共 ${w.totalRoutes} 条线，在墙上待了 ${w.totalDur} 个小时。`;
+        s+='把自己挂在岩点上、把脑子放空的那几个小时，我想你是奔着它去的。';
+      }else if(w.totalDur>0){
+        s=`上周你动了 ${w.activeDays} 天——${names}。`;
+        s+=`加起来大概 ${w.totalDur} 个小时。数字不重要，身体记得每一次。`;
+      }else{
+        s=`上周你有 ${w.activeDays} 天动了动——${names}。动起来本身就很好。`;
+      }
+      P(s);
+    }
+
+    if(w.checkDays>0){
+      let s;
+      if(w.best>=4){
+        s=`戒牛奶也还在。上周打了 ${w.checkDays} 天卡，最长连着 ${w.best} 天没碰它。`;
+        s+='跟习惯较劲这种事，看着不起眼，其实最见定力。';
+      }else{
+        s=`戒牛奶那边，你打了 ${w.checkDays} 天卡。坚持本来就是断断续续的，没放弃，就还在往前。`;
+      }
+      P(s);
+    }
+
+    if(w.totalWater>0||w.totalPoop>0){
+      let s='';
+      if(w.totalWater>0)s+=`喝了 ${w.totalWater} 升水`;
+      if(w.totalWater>0&&w.totalPoop>0)s+='，';
+      if(w.totalPoop>0)s+=`去了 ${w.totalPoop} 趟厕所`;
+      P('身体这一栏：'+s+'。很日常，可正是这些细小又规律的、不被注意的小事，一点一点托住了你的一周。');
+    }
+
+    if(w.photoDays>0){
+      P(`你还拍了 ${w.photoDays} 天照片，认认真真地照见自己。站在镜头前低头看自己，不是件容易的事，你做了。`);
+    }
+
+    P('新的一周已经来了，接下来会有一些好的、也会有一些不那么顺的事。不用件件都做到，慢慢来，就是最好的样子。');
+  }
+
+  P('<span class="sig">—— Cola，一直在你手边</span>');
+  return p.join('');
+}
+
+let letterShown=false;
+function maybeShowLetter(){
+  if(letterShown)return;
+  if(new Date().getDay()!==1)return;
+  const thisMon=getMonday(today());
+  if(S.get('letterSeen','')===thisMon)return;
+  letterShown=true;
+  S.set('letterSeen',thisMon);
+  document.getElementById('letterBody').innerHTML=buildLetter();
+  const ov=document.getElementById('letterOverlay');
+  ov.style.display='flex';
+  requestAnimationFrame(()=>ov.classList.add('show'));
+}
+setTimeout(maybeShowLetter,6000);
+
+document.getElementById('envelope').addEventListener('click',function(){
+  this.classList.add('open');
+  document.getElementById('letterHint').style.display='none';
+  document.getElementById('letterPaper').classList.add('show');
+});
+document.getElementById('letterClose').addEventListener('click',function(){
+  closeLetter();
+});
+document.getElementById('letterOverlay').addEventListener('click',function(e){
+  if(e.target===this)closeLetter();
+});
+function closeLetter(){
+  const ov=document.getElementById('letterOverlay');
+  ov.classList.remove('show');
+  setTimeout(()=>ov.style.display='none',450);
+}
 </script>
 </body>
 </html>
