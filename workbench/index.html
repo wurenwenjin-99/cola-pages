@@ -1299,11 +1299,10 @@ function buildLetter(){
 let letterShown=false;
 function maybeShowLetter(){
   if(letterShown)return;
-  if(new Date().getDay()!==1)return;
-  const thisMon=getMonday(today());
-  if(S.get('letterSeen','')===thisMon)return;
+  const todayKey=today();
+  if(S.get('letterSeen','')===todayKey)return;
   letterShown=true;
-  S.set('letterSeen',thisMon);
+  S.set('letterSeen',todayKey);
   document.getElementById('letterBody').innerHTML=buildLetter();
   const ov=document.getElementById('letterOverlay');
   ov.style.display='flex';
