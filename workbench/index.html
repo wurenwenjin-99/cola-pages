@@ -43,6 +43,8 @@ body{
 
 .section-title{font-size:1.1rem;font-weight:700;margin-bottom:16px;display:flex;align-items:center;gap:8px}
 .section-title .icon{font-size:1.3rem}
+.section-title .custom-btn{margin-left:auto;padding:5px 10px;border:1px solid var(--border);border-radius:999px;background:transparent;color:var(--primary-deep);font-family:inherit;font-size:.72rem;cursor:pointer;white-space:nowrap}
+.section-title .custom-btn:active{background:var(--primary-light)}
 
 /* Calendar */
 .calendar{
@@ -289,6 +291,33 @@ body{
 .caret{display:inline-block;width:.52em;height:1em;background:#F2EDE3;vertical-align:-.12em;margin-left:2px;animation:caretBlink .9s steps(1) infinite}
 @keyframes caretBlink{50%{opacity:0}}
 
+/* Custom quit settings */
+.quit-settings-overlay{
+  position:fixed;inset:0;z-index:997;background:rgba(40,36,28,.52);
+  display:none;align-items:center;justify-content:center;padding:20px;
+}
+.quit-settings-overlay.show{display:flex}
+.quit-settings-card{
+  width:min(360px,92vw);background:var(--card);border:1px solid rgba(176,141,87,.28);
+  border-radius:18px;padding:20px 18px;box-shadow:0 18px 50px rgba(40,36,28,.25)
+}
+.quit-settings-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px}
+.quit-settings-head h3{font-size:1rem;color:var(--ink)}
+.quit-settings-close{border:0;background:none;color:var(--ink3);font-size:1.25rem;line-height:1;cursor:pointer;padding:2px 5px}
+.quit-settings-card label{display:block;font-size:.76rem;color:var(--ink2);margin-bottom:12px}
+.quit-settings-card input{
+  display:block;width:100%;margin-top:6px;padding:10px 11px;border:1px solid var(--border);
+  border-radius:10px;background:var(--bg);color:var(--ink);font-family:inherit;font-size:.84rem
+}
+.quit-date-row{display:flex;gap:10px}
+.quit-date-row label{flex:1;min-width:0}
+.quit-settings-hint{font-size:.68rem;color:var(--ink3);line-height:1.5;margin:-2px 0 14px}
+.quit-settings-actions{display:flex;gap:8px}
+.quit-settings-actions button{flex:1;padding:10px;border-radius:10px;font-family:inherit;font-size:.8rem;cursor:pointer}
+.quit-cancel-btn{border:1px solid var(--border);background:transparent;color:var(--ink2)}
+.quit-save-btn{border:0;background:var(--primary);color:#FBF8F1;font-weight:600}
+.quit-range{font-size:.7rem;color:var(--ink3);margin-top:5px}
+
 /* Letter (周一信封) */
 .letter-overlay{
   position:fixed;inset:0;z-index:998;background:rgba(40,36,28,.62);
@@ -361,7 +390,7 @@ body{
 <!-- Tabs -->
 <div class="tabs">
   <button class="tab active" data-tab="tasks"><span class="emoji">📋</span>每周任务</button>
-  <button class="tab" data-tab="milk"><span class="emoji">🥛</span>戒牛奶</button>
+  <button class="tab" data-tab="milk"><span class="emoji">🚫</span><span id="milkTabLabel">戒些东西</span></button>
   <button class="tab" data-tab="body"><span class="emoji">💩</span>拉粑喝水</button>
   <button class="tab" data-tab="sport"><span class="emoji">🏃</span>动起来</button>
 </div>
@@ -398,13 +427,14 @@ body{
   </div>
 </div>
 
-<!-- Panel 2: 戒牛奶 -->
+<!-- Panel 2: 戒些东西 -->
 <div class="panel" id="panel-milk">
-  <div class="section-title"><span class="icon">🥛</span>戒牛奶</div>
+  <div class="section-title"><span class="icon">🚫</span><span id="milkTitle">戒些东西</span><button class="custom-btn" id="customQuitBtn" type="button">自定义</button></div>
 
   <div class="big-counter" id="milkCounter">
     <div class="count" id="milkDays">--</div>
     <div class="label">已戒第 <span id="milkDaysNum">--</span> 天</div>
+    <div class="quit-range" id="quitRange"></div>
     <div class="cheat-badge" id="cheatBadge" style="display:none">🎉 放纵日</div>
   </div>
 
@@ -547,6 +577,32 @@ body{
 <!-- Lightbox -->
 <div class="lightbox" id="lightbox"><img id="lightboxImg" src="" alt=""></div>
 
+<!-- Custom quit settings -->
+<div class="quit-settings-overlay" id="quitSettingsOverlay" aria-hidden="true">
+  <div class="quit-settings-card" role="dialog" aria-modal="true" aria-labelledby="quitSettingsTitle">
+    <div class="quit-settings-head">
+      <h3 id="quitSettingsTitle">自定义戒断</h3>
+      <button class="quit-settings-close" id="quitSettingsClose" type="button" aria-label="关闭">×</button>
+    </div>
+    <label>要戒的东西
+      <input type="text" id="quitItemInput" placeholder="例如：奶茶、熬夜、刷手机" maxlength="30">
+    </label>
+    <div class="quit-date-row">
+      <label>开始日期
+        <input type="date" id="quitStartInput">
+      </label>
+      <label>结束日期
+        <input type="date" id="quitEndInput">
+      </label>
+    </div>
+    <div class="quit-settings-hint">不填结束日期，就会一直记录到你主动修改为止。</div>
+    <div class="quit-settings-actions">
+      <button class="quit-cancel-btn" id="quitSettingsCancel" type="button">取消</button>
+      <button class="quit-save-btn" id="quitSettingsSave" type="button">保存修改</button>
+    </div>
+  </div>
+</div>
+
 <!-- Weekly letter -->
 <div class="letter-overlay" id="letterOverlay">
   <div class="letter-wrap">
@@ -564,6 +620,19 @@ body{
 
 <script>
 /* ==================== STORAGE ==================== */
+function getQuitThing(){
+  const item=String(S.get('quitItem','')||'').trim().replace(/^戒[\s　]*/,'');
+  return item?`戒${item}`:'戒些东西';
+}
+function getQuitItem(){return getQuitThing().replace(/^戒/,'')}
+function getQuitRange(){
+  return {
+    start:S.get('quitStart','')||S.get('milkStart','')||today(),
+    end:S.get('quitEnd','')||''
+  };
+}
+function escapeHTML(value){return String(value).replace(/[&<>"']/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]))}
+
 const S = {
   mem:{},
   get(k,d){try{const v=localStorage.getItem('jinjin_'+k);return v?JSON.parse(v):d}catch(e){return this.mem[k]!==undefined?this.mem[k]:d}},
@@ -837,28 +906,36 @@ function milkRewardReady(checks,td){return milkCheckCount(checks)>=7&&!!checks[t
 
 function renderMilk(){
   let {start,checks,photos}=milkData();
+  const quitThing=getQuitThing();
+  const range=getQuitRange();
+  start=range.start;
+  const rangeEnd=range.end&&range.end<today()?range.end:today();
+  document.getElementById('milkTabLabel').textContent=quitThing;
+  document.getElementById('milkTitle').textContent=quitThing;
   const td=today();
 
   // 首次打开：默认从打开界面的当天开始戒奶结算
   if(!start){start=td;S.set('milkStart',start)}
 
-  const diff=Math.floor((new Date(td)-new Date(start))/(86400000));
+  const diff=Math.floor((new Date(rangeEnd)-new Date(start))/(86400000));
   const days=Math.max(0,diff);
+  const rangeText=range.end?`${range.start} 至 ${range.end}`:`${range.start} 起 · 进行中`;
+  document.getElementById('quitRange').textContent=rangeText;
   const reward=milkRewardReady(checks,td);
 
   document.getElementById('milkDays').textContent=days;
   document.getElementById('milkDaysNum').textContent=days;
   document.getElementById('milkDays').className='count'+(reward?' cheat':'');
   const badge=document.getElementById('cheatBadge');
-  badge.textContent=reward?'🌼 今日可以喝牛奶':'';
+  badge.textContent=reward?`🌼 今日可以放松一下`:'';
   badge.style.display=reward?'inline-block':'none';
 
   const toggle=document.getElementById('milkToggle');
   toggle.checked=!!checks[td];
   const wrap=document.getElementById('milkSwitchWrap');
   wrap.className='switch'+(reward?' flower':'');
-  wrap.title=reward?'坚持打卡满7次，今天奖励自己一杯牛奶':'今日打卡';
-  document.querySelector('#panel-milk .toggle-label').textContent=reward?'今日奖励 · 可以喝牛奶':'今日打卡';
+  wrap.title=reward?`坚持打卡满7次，今天奖励自己一下`:'今日打卡';
+  document.querySelector('#panel-milk .toggle-label').textContent=reward?'今日奖励 · 可以放松一下':'今日打卡';
 
   toggle.onchange=function(){checks[td]=this.checked;S.set('milkChecks',checks);renderMilk()};
 
@@ -944,6 +1021,38 @@ document.getElementById('photoLegs').addEventListener('click',function(e){
   if(e.target.tagName==='INPUT')return;
   if(e.target.tagName==='IMG'){openPhotoLightbox(e.target.src);return}
   this.querySelector('input').click();
+});
+
+const quitSettingsOverlay=document.getElementById('quitSettingsOverlay');
+function openQuitSettings(){
+  const range=getQuitRange();
+  document.getElementById('quitItemInput').value=getQuitItem()==='些东西'?'':getQuitItem();
+  document.getElementById('quitStartInput').value=range.start;
+  document.getElementById('quitEndInput').value=range.end;
+  quitSettingsOverlay.classList.add('show');
+  quitSettingsOverlay.setAttribute('aria-hidden','false');
+  setTimeout(()=>document.getElementById('quitItemInput').focus(),0);
+}
+function closeQuitSettings(){
+  quitSettingsOverlay.classList.remove('show');
+  quitSettingsOverlay.setAttribute('aria-hidden','true');
+}
+document.getElementById('customQuitBtn').addEventListener('click',openQuitSettings);
+document.getElementById('quitSettingsClose').addEventListener('click',closeQuitSettings);
+document.getElementById('quitSettingsCancel').addEventListener('click',closeQuitSettings);
+quitSettingsOverlay.addEventListener('click',e=>{if(e.target===quitSettingsOverlay)closeQuitSettings()});
+document.getElementById('quitSettingsSave').addEventListener('click',()=>{
+  const item=document.getElementById('quitItemInput').value.trim().replace(/^戒[\s　]*/,'');
+  const start=document.getElementById('quitStartInput').value||today();
+  const end=document.getElementById('quitEndInput').value||'';
+  if(!item){window.alert('请先写下想戒的东西');return}
+  if(end&&end<start){window.alert('结束日期不能早于开始日期');return}
+  S.set('quitItem',item);
+  S.set('quitStart',start);
+  S.set('milkStart',start);
+  S.set('quitEnd',end);
+  closeQuitSettings();
+  renderMilk();
 });
 
 function renderMilkSummary(){
@@ -1269,10 +1378,10 @@ function buildLetter(){
     if(w.checkDays>0){
       let s;
       if(w.best>=4){
-        s=`戒牛奶也还在。上周打了 ${w.checkDays} 天卡，最长连着 ${w.best} 天没碰它。`;
+        s=`${escapeHTML(getQuitThing())}也还在。上周打了 ${w.checkDays} 天卡，最长连着 ${w.best} 天没碰它。`;
         s+='跟习惯较劲这种事，看着不起眼，其实最见定力。';
       }else{
-        s=`戒牛奶那边，你打了 ${w.checkDays} 天卡。坚持本来就是断断续续的，没放弃，就还在往前。`;
+        s=`${escapeHTML(getQuitThing())}那边，你打了 ${w.checkDays} 天卡。坚持本来就是断断续续的，没放弃，就还在往前。`;
       }
       P(s);
     }
