@@ -1,0 +1,369 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="theme-color" content="#F2EDE3">
+<title>灵感库 · 尊尊是只兔</title>
+<style>
+@font-face{font-family:'FZXS12';src:url('./fonts/fzxs12.ttf') format('truetype');font-display:swap}
+:root{
+  --bg:#F2EDE3; --card:#FBF8F1; --card2:#E9E2D3;
+  --primary:#B08D57; --primary-deep:#8A6D3F;
+  --ink:#3D3A34; --ink2:#6E675C; --ink3:#A39B8C;
+  --line:rgba(61,58,52,.10);
+  --c-food:#B06050; --c-work:#8FA3B8; --c-isfp:#8FA98F; --c-rabbit:#C9A44C; --c-fest:#A97B86;
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;padding:0}
+body{
+  background:var(--bg); color:var(--ink);
+  font:15px/1.5 -apple-system,BlinkMacSystemFont,"PingFang SC","Hiragino Sans GB",sans-serif;
+  padding-bottom:calc(28px + env(safe-area-inset-bottom));
+  -webkit-font-smoothing:antialiased;
+}
+.pix{font-family:'FZXS12',ui-monospace,monospace;letter-spacing:.5px}
+
+/* ── header ── */
+header{
+  position:sticky; top:0; z-index:30;
+  background:linear-gradient(180deg,var(--bg) 72%,rgba(242,237,227,0));
+  padding:calc(14px + env(safe-area-inset-top)) 16px 10px;
+}
+.hrow{display:flex;align-items:flex-end;justify-content:space-between;gap:12px}
+h1{margin:0;font-size:21px;letter-spacing:.5px;font-weight:700}
+h1 em{font-style:normal;color:var(--primary)}
+.sub{margin-top:3px;font-size:10px;color:var(--ink3);text-transform:uppercase}
+.wk{
+  text-align:right;font-size:10px;color:var(--ink2);line-height:1.35;
+}
+.wk b{display:block;font-family:'FZXS12',monospace;font-size:17px;color:var(--primary-deep);font-weight:400}
+
+/* ── filters ── */
+.chips{
+  display:flex;gap:7px;overflow-x:auto;scrollbar-width:none;
+  padding:10px 16px 4px;margin:0 -16px;
+}
+.chips::-webkit-scrollbar{display:none}
+.chip{
+  flex:0 0 auto;border:1px solid var(--line);background:transparent;color:var(--ink2);
+  padding:5px 12px;border-radius:999px;font-size:12.5px;font-family:inherit;
+  transition:.18s;
+}
+.chip.on{background:var(--ink);border-color:var(--ink);color:#fff}
+
+/* ── feed ── */
+.wrap{max-width:1240px;margin:0 auto}
+.feed{
+  padding:8px 14px 0;
+  column-count:2; column-gap:9px;
+}
+@media(min-width:620px){ .feed{column-count:3;column-gap:12px;padding:10px 20px 0}
+  .chips{padding-left:20px;padding-right:20px;margin:0 -20px}
+  .card h3{font-size:14px} }
+@media(min-width:900px){ .feed{column-count:4;column-gap:14px}
+  header{padding-left:22px;padding-right:22px} }
+@media(min-width:1200px){ .feed{column-count:5;column-gap:16px} }
+.card{
+  break-inside:avoid; margin:0 0 9px; background:var(--card);
+  border-radius:11px; overflow:hidden;
+  box-shadow:0 1px 0 rgba(61,58,52,.05), 0 6px 14px -12px rgba(61,58,52,.5);
+  cursor:pointer; transition:transform .16s;
+}
+.card:active{transform:scale(.985)}
+.card.done{opacity:.44}
+.card.done .cover::after{
+  content:"已做"; position:absolute; inset:auto 0 0 0; text-align:center;
+  font-family:'FZXS12',monospace; font-size:10px; padding:3px 0;
+  background:rgba(61,58,34,.55); color:#fff; letter-spacing:2px;
+}
+.cover{position:relative;display:flex;align-items:center;justify-content:center;
+  background:var(--card2);overflow:hidden;padding:15px 13px}
+.ct{font-weight:700;line-height:1.26;letter-spacing:.2px;width:100%;z-index:2}
+.ct span{display:block}
+.cover.v0 .ct{text-align:center}
+.cover.v3 .ct{text-align:center}
+
+.ct.low{align-self:flex-end;padding-bottom:14px}
+.hair{position:absolute;left:13px;right:13px;top:22px;height:1px;background:rgba(61,58,52,.22)}
+.split{position:absolute;right:0;left:0;bottom:0;height:46%;background:rgba(61,58,52,.07)}
+.rb-corner{position:absolute;right:8px;bottom:6px;opacity:.45;z-index:1}
+.band{position:absolute;left:0;right:0;top:26%;height:48%;background:rgba(251,248,241,.62);z-index:1}
+.blob{position:absolute;width:74%;padding-bottom:74%;border-radius:50%;
+  background:rgba(251,248,241,.55);z-index:1;top:16%}
+.ctag{position:absolute;left:0;top:0;z-index:3;
+  font-family:'FZXS12',monospace;font-size:8.5px;letter-spacing:1px;
+  padding:2px 6px;background:rgba(251,248,241,.8);color:var(--ink2);border-bottom-right-radius:6px}
+.play{
+  position:absolute;top:7px;right:7px;width:22px;height:22px;border-radius:50%;
+  background:rgba(61,58,52,.66);display:flex;align-items:center;justify-content:center;
+}
+.play::before{content:"";border-left:6px solid #fff;border-top:4px solid transparent;border-bottom:4px solid transparent;margin-left:2px}
+.wtag{
+  position:absolute;left:0;bottom:0;
+  font-family:'FZXS12',monospace;font-size:9px;letter-spacing:1px;
+  padding:2px 6px;background:rgba(251,248,241,.82);color:var(--ink2);
+  border-top-right-radius:6px;
+}
+.card h3{
+  margin:0;padding:8px 9px 5px;font-size:13px;line-height:1.42;font-weight:600;
+  display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;
+}
+.meta{
+  display:flex;align-items:center;gap:5px;padding:0 9px 9px;
+  font-size:10.5px;color:var(--ink3);
+}
+.dot{width:5px;height:5px;border-radius:50%;background:var(--c,var(--primary));flex:0 0 auto}
+.meta .lk{margin-left:auto;font-family:'FZXS12',monospace;font-size:10px;color:var(--ink3);display:flex;align-items:center;gap:2px}
+.meta .lk::before{content:"♡";font-family:-apple-system,sans-serif;font-size:11px}
+
+.empty{column-span:all;text-align:center;color:var(--ink3);padding:48px 0;font-size:13px}
+
+/* ── sheet ── */
+.sheet-wrap{
+  position:fixed;inset:0;z-index:60;display:none;
+}
+.sheet-wrap.open{display:block}
+.mask{position:absolute;inset:0;background:rgba(61,58,52,.34);backdrop-filter:blur(2px)}
+.sheet{
+  position:absolute;left:0;right:0;bottom:0;max-height:88vh;overflow-y:auto;
+  background:var(--card);border-radius:18px 18px 0 0;
+  padding:6px 20px calc(24px + env(safe-area-inset-bottom));
+  transform:translateY(14px);opacity:0;transition:.24s cubic-bezier(.2,.8,.2,1);
+}
+.sheet-wrap.open .sheet{transform:none;opacity:1}
+.grab{width:38px;height:4px;border-radius:2px;background:var(--card2);margin:8px auto 16px}
+.tags{display:flex;gap:6px;margin-bottom:9px;flex-wrap:wrap}
+.tag{
+  font-family:'FZXS12',monospace;font-size:9.5px;letter-spacing:.5px;
+  padding:3px 8px;border-radius:999px;background:var(--card2);color:var(--ink2);
+}
+.tag.c{background:var(--c);color:#fff}
+.sheet h2{margin:0 0 16px;font-size:20px;line-height:1.42;letter-spacing:.2px}
+.blk{margin:0 0 16px}
+.blk dt{
+  font-family:'FZXS12',monospace;font-size:10px;letter-spacing:1.5px;color:var(--primary-deep);
+  margin:0 0 5px;
+}
+.blk dd{margin:0;font-size:13.5px;line-height:1.68;color:var(--ink)}
+.blk dd.mute{color:var(--ink2);font-size:12.5px}
+.refcard{
+  border:1px solid var(--line);border-radius:10px;padding:11px 12px;background:#fff;
+}
+.refcard .rt{font-size:13px;font-weight:600;margin-bottom:3px}
+.refcard .ra{font-size:11px;color:var(--ink3);font-family:'FZXS12',monospace}
+.refcard .rn{margin:8px 0 0;font-size:12.5px;line-height:1.6;color:var(--ink2)}
+.refbtn{
+  display:flex;align-items:center;justify-content:center;gap:6px;width:100%;
+  margin-top:11px;padding:9px;border-radius:8px;
+  background:var(--card2);color:var(--ink);font-size:12.5px;text-decoration:none;
+}
+.refbtn:active{background:#ddd5c2}
+.refbtn .hint{font-size:10px;color:var(--ink3);margin-left:4px}
+.donebtn{
+  width:100%;padding:13px;border:none;border-radius:10px;font-family:inherit;font-size:14px;
+  background:var(--ink);color:#fff;letter-spacing:1px;
+}
+.donebtn.on{background:var(--card2);color:var(--ink2)}
+.shotwrap{margin-top:2px}
+.shot{
+  position:relative;display:flex;flex-direction:column;gap:8px;
+  border-radius:10px;padding:10px;cursor:zoom-in;
+}
+.shotcap{margin-top:5px;text-align:right;font-family:'FZXS12',monospace;font-size:9px;
+  color:var(--ink2);letter-spacing:1px}
+.shot.one .fcell{min-height:64px}
+.fcell{position:relative;display:flex;align-items:center;justify-content:center;
+  min-height:74px;background:rgba(255,255,255,.6);
+  border:1px solid rgba(61,58,52,.2);border-radius:7px;padding:20px 12px 12px;text-align:center}
+.fcell i{position:absolute;left:8px;top:6px;font-style:normal;font-family:'FZXS12',monospace;
+  font-size:9px;color:var(--primary-deep);letter-spacing:1px}
+.fcell span{font-size:12.5px;line-height:1.5;color:var(--ink)}
+.zoom{position:fixed;inset:0;z-index:90;display:flex;align-items:center;justify-content:center;padding:18px}
+.zoom-in{width:100%;max-width:560px;border-radius:14px;padding:14px;display:flex;flex-direction:column;gap:10px;
+  animation:pop .22s cubic-bezier(.2,.8,.2,1)}
+.zoom-in .fcell{min-height:38vh}
+.zoom-in .fcell span{font-size:20px;line-height:1.6}
+@keyframes pop{from{transform:scale(.94);opacity:0}}
+</style>
+</head>
+<body>
+
+<header><div class="wrap">
+  <div class="hrow">
+    <div>
+      <h1>灵感<em>库</em></h1>
+      <div class="sub pix">zunzun the rabbit · weekly</div>
+    </div>
+    <div class="wk">
+      <b id="wkNum">W04</b>
+      <span id="wkMeta">30 条 · 12 未做</span>
+    </div>
+  </div>
+  <div class="chips" id="chips"></div>
+</div></header>
+
+<div class="wrap"><div class="feed" id="feed"></div></div>
+
+<div class="sheet-wrap" id="wrap">
+  <div class="mask" onclick="closeSheet()"></div>
+  <div class="sheet" id="sheet"></div>
+</div>
+
+<script src="./data.js"></script>
+<script>
+const COLORS={'食物':'--c-food','上班':'--c-work','isfp':'--c-isfp','兔兔日常':'--c-rabbit','节日':'--c-fest'};
+const RATIO={'二宫格':1.34,'表情包':1.0,'图文':1.24,'视频':1.34,'六宫格':1.34,'单图':1.2};
+const DONE_KEY='hot_done_v1';
+let done=JSON.parse(localStorage.getItem(DONE_KEY)||'[]');
+let filter='全部';
+
+/* ── 封面：像真封面那样以大字为主，六种版面轮换 ── */
+function breakLines(str){
+  const parts=str.split(/[，,：:、／\/\s]+/).filter(Boolean);
+  let lines=[],cur='';
+  for(const p of parts){
+    if((cur+p).length<=7) cur+=p;
+    else { if(cur) lines.push(cur); cur=p; }
+  }
+  if(cur) lines.push(cur);
+  if(lines.length>3){ lines=lines.slice(0,3); lines[2]=lines[2].slice(0,7)+'…'; }
+  return lines.every(l=>l.length<=7)?lines:lines.map(l=>l.slice(0,8));
+}
+function rabbit(size,color){
+  return `<svg viewBox="0 0 60 70" width="${size}" height="${size*70/60}" fill="none" stroke="${color}" stroke-width="2.4" stroke-linecap="round">
+    <path d="M22 34C16 18 15 6 21 6c6 0 7 16 9 28"/>
+    <path d="M38 34C44 18 45 6 39 6c-6 0-7 16-9 28"/>
+    <ellipse cx="30" cy="47" rx="16" ry="14"/>
+    <circle cx="24" cy="44" r="1.6" fill="${color}" stroke="none"/>
+    <circle cx="36" cy="44" r="1.6" fill="${color}" stroke="none"/>
+    <path d="M30 49v2"/><path d="M27 53c2 2 4 2 6 0"/></svg>`;
+}
+function coverArt(t,d){
+  const v=t.i%6;
+  const lines=breakLines(t.title);
+  const maxLen=Math.max(...lines.map(l=>l.length));
+  const fs=Math.max(16,Math.min(25,Math.floor(155/maxLen)));
+  const body=lines.map(l=>`<span>${l}</span>`).join('');
+  const tag=`<span class="ctag">${t.form}</span>`;
+  if(v===1) return `<div class="ct low" style="font-size:${fs}px">${body}</div><div class="rb-corner">${rabbit(30,d.ink2)}</div>${tag}`;
+  if(v===2) return `<div class="hair"></div><div class="ct low" style="font-size:${fs}px">${body}</div>${tag}`;
+  if(v===3) return `<div class="band"></div><div class="ct" style="font-size:${fs}px">${body}</div>${tag}`;
+  if(v===4) return `<div class="blob"></div><div class="ct" style="font-size:${fs}px">${body}</div>${tag}`;
+  if(v===5) return `<div class="split"></div><div class="ct" style="font-size:${fs}px">${body}</div>${tag}`;
+  return `<div class="ct" style="font-size:${fs}px">${body}</div>${tag}`;
+}
+
+function tintOf(cat){
+  const base={'食物':'#B06050','上班':'#8FA3B8','isfp':'#8FA98F','兔兔日常':'#C9A44C','节日':'#A97B86'}[cat]||'#B08D57';
+  return base;
+}
+function mix(hex,a){
+  const n=parseInt(hex.slice(1),16), r=n>>16&255, g=n>>8&255, b=n&255;
+  const f=(x)=>Math.round(x+(247-x)*a);
+  return `rgb(${f(r)},${f(g)},${f(b)})`;
+}
+
+function render(){
+  const cats=['全部',...new Set(TOPICS.map(t=>t.cat).filter(Boolean))];
+  document.getElementById('chips').innerHTML=cats.map(c=>
+    `<button class="chip ${c===filter?'on':''}" onclick="setFilter('${c}')">${c}</button>`).join('');
+
+  const list=TOPICS.filter(t=>filter==='全部'||t.cat===filter);
+  const feed=document.getElementById('feed');
+  if(!list.length){feed.innerHTML='<div class="empty">这一类还没有</div>';return;}
+  feed.innerHTML=list.map(t=>{
+    const bg=tintOf(t.cat), d={bg:mix(bg,.88),mix:mix(bg,.34),ink2:bg};
+    const jit=[0,.14,-.12,.06,-.06,.18][t.i%6];
+    const ratio=Math.max(1,(RATIO[t.form]||1.28)+jit);
+    const isDone=done.includes(t.i);
+    const likes=t.ref&&t.ref.likes?t.ref.likes:'';
+    return `<article class="card ${isDone?'done':''}" data-i="${t.i}" onclick="openSheet(${t.i})">
+      <div class="cover v${t.i%6}" style="--c:var(${COLORS[t.cat]||'--primary'});background:${d.bg};aspect-ratio:1/${ratio.toFixed(3)}">
+        ${coverArt(t,d)}
+        ${t.form==='视频'?'<span class="play"></span>':''}
+        <span class="wtag">W${String(t.week).padStart(2,'0')}</span>
+      </div>
+      <h3>${t.title}</h3>
+      <div class="meta">
+        <span class="dot" style="--c:${bg}"></span><span>${t.cat||'未分类'}</span>
+        <span class="lk">${likes}</span>
+      </div>
+    </article>`;
+  }).join('');
+
+  const undone=TOPICS.filter(t=>!done.includes(t.i)).length;
+  document.getElementById('wkNum').textContent='W'+String(Math.max(...TOPICS.map(t=>t.week))).padStart(2,'0');
+  document.getElementById('wkMeta').textContent=`${TOPICS.length} 条 · ${undone} 未做`;
+}
+function setFilter(c){filter=c;render();window.scrollTo({top:0,behavior:'smooth'});}
+
+function panels(scene){
+  const s=(scene||'').trim();
+  const two=/上格[:：]([^；;]+)[；;]\s*(下格|左格|右格)[:：]([^；;]+)/.exec(s);
+  if(two) return [{k:'上格',v:two[1]},{k:two[2],v:two[3]}];
+  const lr=/左格[:：]([^；;]+)[；;]\s*右格[:：]([^；;]+)/.exec(s);
+  if(lr) return [{k:'左格',v:lr[1]},{k:'右格',v:lr[2]}];
+  const parts=s.split(/[；;]/).filter(Boolean);
+  if(parts.length>=2) return parts.slice(0,2).map((v,j)=>({k:j?'下格':'上格',v}));
+  return [{k:'单格',v:s}];
+}
+function sceneHTML(t){
+  const ps=panels(t.scene);
+  const bg={'食物':'#F6E9E3','上班':'#E7EDF2','isfp':'#E9EFE8','兔兔日常':'#F7EFD9','节日':'#F3E6E9'}[t.cat]||'#EFEAE0';
+  const cells=ps.map(p=>`<div class="fcell"><i>${p.k}</i><span>${p.v}</span></div>`).join('');
+  return `<div class="shotwrap">
+      <div class="shot ${ps.length===1?'one':''}" style="background:${bg}" onclick="zoomScene(${t.i})">${cells}</div>
+      <div class="shotcap">点这里放大</div></div>`;
+}
+function zoomScene(i){
+  const t=TOPICS.find(x=>x.i===i);
+  const ps=panels(t.scene);
+  const bg={'食物':'#F6E9E3','上班':'#E7EDF2','isfp':'#E9EFE8','兔兔日常':'#F7EFD9','节日':'#F3E6E9'}[t.cat]||'#EFEAE0';
+  const cells=ps.map(p=>`<div class="fcell"><i>${p.k}</i><span>${p.v}</span></div>`).join('');
+  const el=document.createElement('div');
+  el.className='zoom'; el.style.background='rgba(61,58,52,.9)';
+  el.innerHTML=`<div class="zoom-in" style="background:${bg}">${cells}</div>`;
+  el.onclick=()=>el.remove();
+  document.body.appendChild(el);
+}
+function openSheet(i){
+  const t=TOPICS.find(x=>x.i===i); const bg=tintOf(t.cat); const isDone=done.includes(t.i);
+  document.getElementById('sheet').innerHTML=`
+    <div class="grab"></div>
+    <div class="tags">
+      <span class="tag c" style="--c:${bg}">${t.cat||'未分类'}</span>
+      <span class="tag">${t.form}</span>
+      <span class="tag">${t.kind}</span>
+      <span class="tag">W${String(t.week).padStart(2,'0')}</span>
+    </div>
+    <h2>${t.title}</h2>
+    <dl class="blk"><dt>画面</dt><dd>${sceneHTML(t)}</dd></dl>
+    <dl class="blk"><dt>为什么是这条</dt><dd class="mute">${t.basis||'—'}</dd></dl>
+    ${t.ref?`<dl class="blk"><dt>参考</dt><dd>
+      <div class="refcard">
+        <div class="rt">${t.ref.title}</div>
+        <div class="ra">${t.ref.author} ｜ ${t.ref.likes} 赞</div>
+        <p class="rn">${t.ref.note||''}</p>
+        <a class="refbtn" href="${t.ref.url}" target="_blank" rel="noopener">在小红书里打开<span class="hint">手机上会直接跳到 App</span></a>
+      </div></dd></dl>`:''}
+    <button class="donebtn ${isDone?'on':''}" onclick="toggleDone(${t.i})">${isDone?'已完成 · 点一下取消':'标记为已做'}</button>`;
+  document.getElementById('wrap').classList.add('open');
+  document.body.style.overflow='hidden';
+}
+function closeSheet(){
+  document.getElementById('wrap').classList.remove('open');
+  document.body.style.overflow='';
+}
+function toggleDone(i){
+  done=done.includes(i)?done.filter(x=>x!==i):[...done,i];
+  localStorage.setItem(DONE_KEY,JSON.stringify(done));
+  closeSheet(); render();
+}
+document.addEventListener('keydown',e=>{if(e.key==='Escape')closeSheet();});
+render();
+</script>
+</body>
+</html>
